@@ -76,6 +76,8 @@ def input_catalogo_cuentas() -> dict | None:
         }
         return catalogo_cuentas
     
+# Funciones para calcular los estados financieros
+    
 def calcular_estado_resultados(catalogo_cuentas: dict) -> dict | str:
     estado_resultados = {}
     try:
@@ -112,6 +114,108 @@ def calcular_estado_resultados(catalogo_cuentas: dict) -> dict | str:
         return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas.\n"
     return estado_resultados
 
+def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) -> dict | str:
+    balance_general = {}
+    try:
+        # Asignar los valores del catálogo de cuentas a las variables correspondientes
+        balance_general["ACTIVO CIRCULANTE"] = ""
+        balance_general["Bancos"] = catalogo_cuentas.get("Bancos", 0)
+        balance_general["Clientes"] = catalogo_cuentas.get("Clientes", 0)
+        balance_general["Inventarios"] = catalogo_cuentas.get("Inventarios", 0)
+        balance_general["Papelería y Utiles"] = catalogo_cuentas.get("Papelería y Utiles", 0)
+        balance_general["Total Activo Circulante"] = catalogo_cuentas.get("Bancos", 0) + catalogo_cuentas.get("Clientes", 0) + catalogo_cuentas.get("Inventarios", 0) + catalogo_cuentas.get("Papelería y Utiles", 0)
+        balance_general["ACTIVO NO CIRCULANTE"] = ""
+        balance_general["Terreno y Edificio"] = catalogo_cuentas.get("Terreno y Edificio", 0)
+        balance_general["Maquinaria y Equipo"] = catalogo_cuentas.get("Maquinaria y Equipo", 0)
+        balance_general["Mobiliario y Accesorios"] = catalogo_cuentas.get("Mobiliario y Accesorios", 0)
+        balance_general["Equipo de Transporte"] = catalogo_cuentas.get("Equipo de Transporte", 0)
+        balance_general["Equipo de Cómputo"] = catalogo_cuentas.get("Equipo de Cómputo", 0)
+        balance_general["Depreciación Acumulada Activos Fijos"] = catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
+        balance_general["Inversiones Permanentes"] = catalogo_cuentas.get("Inversiones Permanentes", 0)
+        balance_general["OTROS ACTIVOS"] = ""
+        balance_general["Gastos de Instalacion"] = catalogo_cuentas.get("Gastos de Instalacion", 0)
+        balance_general["Total Activo No Circulante"] = catalogo_cuentas.get("Maquinaria y Equipo", 0) + catalogo_cuentas.get("Mobiliario y Accesorios", 0) + catalogo_cuentas.get("Terreno y Edificio", 0) + catalogo_cuentas.get("Inversiones Permanentes", 0) + catalogo_cuentas.get("Equipo de Transporte",0) + catalogo_cuentas.get("Equipo de Cómputo", 0) + catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
+        balance_general["Total Activo"] = balance_general["Total Activo Circulante"] + balance_general["Total Activo No Circulante"] + balance_general.get("Gastos de Instalacion", 0)
+        balance_general["PASIVO A CORTO PLAZO"] = ""
+        balance_general["Proveedores"] = catalogo_cuentas.get("Proveedores", 0)
+        balance_general["Acreedores Diversos"] = catalogo_cuentas.get("Acreedores Diversos", 0)
+        balance_general["Anticipos a Clientes"] = catalogo_cuentas.get("Anticipos a Clientes", 0)
+        balance_general["Gastos por Pagar"] = catalogo_cuentas.get("Gastos por Pagar", 0)
+        balance_general["Hipotecas por Pagar (Corto Plazo)"] = catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0)
+        balance_general["Impuestos por Pagar"] = estado_resultados.get("Total Impuestos", 0)
+        balance_general["Préstamos Bancarios (Corto Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0)
+        balance_general["Total Pasivo Circulante"] = catalogo_cuentas.get("Proveedores", 0) + catalogo_cuentas.get("Gastos por Pagar", 0) + catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0) + catalogo_cuentas.get("Acreedores Diversos", 0) + catalogo_cuentas.get("Anticipos a Clientes", 0) + estado_resultados.get("Total Impuestos", 0)
+        balance_general["PASIVO A LARGO PLAZO"] = ""
+        balance_general["Hipotecas por Pagar (Largo Plazo)"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0)
+        balance_general["Préstamos Bancarios (Largo Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
+        balance_general["Total Pasivo No Circulante"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
+        balance_general["Total Pasivo"] = balance_general["Total Pasivo Circulante"] + balance_general["Total Pasivo No Circulante"]
+        balance_general["CAPITAL CONTRIBUIDO"] = ""
+        balance_general["Capital Social"] = catalogo_cuentas.get("Capital Social", 0)
+        balance_general["CAPITAL GANADO"] = ""
+        balance_general["Utilidades del Ejercicio Anterior"] = catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0)
+        balance_general["Reserva Legal"] = catalogo_cuentas.get("Reserva Legal", 0)
+        balance_general["Uitilidad del Ejercicio"] = estado_resultados.get("Utilidad Neta", 0)
+        balance_general["Capital Contable"] = catalogo_cuentas.get("Capital Social", 0) + catalogo_cuentas.get("Reserva Legal", 0) + catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0) + estado_resultados.get("Utilidad Neta", 0)
+        balance_general["Total Pasivo y Capital Contable"] = balance_general["Total Pasivo"] + balance_general["Capital Contable"]
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas.\n"
+    return balance_general
+
+def calcular_capital_trabajo(balance_general: dict) -> dict | str:
+    capital_trabajo = {}
+    try:
+        capital_trabajo["Total Activo Circulante"] = balance_general.get("Total Activo Circulante", 0)
+        capital_trabajo["Total Pasivo Circulante"] = balance_general.get("Total Pasivo Circulante", 0)
+        capital_trabajo["Capital de Trabajo"] = balance_general.get("Total Activo Circulante", 0) - balance_general.get("Total Pasivo Circulante", 0)
+        return capital_trabajo
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el balance general.\n"
+    except Exception as e:
+        return f"Error al calcular el capital de trabajo: {e}\n"
+    
+# Funciones para calcular las razones financieras
+
+
+# Funciones para mostrar los estados financieros de forma legible utilizando pandas
+
+def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> None:
+    try:
+        df=pd.DataFrame(catalogo_cuentas.items(), columns=["Cuenta", "Saldo"])
+        print("\nCatálogo de Cuentas Cargado:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        print(f"{df}\n")
+    except Exception as e:
+        print(f"Error al cargar el catálogo de cuentas: {e}")
+
+def mostrar_estado_resultados(estado_resultados: dict) -> str:
+    try:
+        df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
+        print("\nEstado de Resultados:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        print(f"{df}\n")
+    except Exception as e:
+        return f"Error al mostrar el estado de resultados: {e}"
+    
+def mostrar_balance_general(balance_general: dict) -> str:
+    try:
+        df=pd.DataFrame(balance_general.items(), columns=["Concepto", "Valor"])
+        print("\nBalance General:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        print(f"{df}\n")
+    except Exception as e:
+        return f"Error al mostrar el balance general: {e}"
+    
+def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
+    try:
+        df=pd.DataFrame(capital_trabajo.items(), columns=["Concepto", "Valor"])
+        print("\nCapital de Trabajo:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        print(f"{df}\n")
+    except Exception as e:
+        return f"Error al mostrar el capital de trabajo: {e}"
+    
+
 # Funciones para la persistencia de datos utilizando pickle
 def cargar_datos_catalogo(nombre_archivo):
     """Intenta cargar el estado guardado (diccionarios y variables) desde un archivo."""
@@ -136,23 +240,4 @@ def guardar_datos(datos, nombre_archivo):
         print("--- Datos guardados exitosamente ---")
     except Exception as e:
         print(f"Error al guardar datos: {e}")
-# Funciones que muestan los datos tabulados en la consola
-
-def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> None:
-    try:
-        df=pd.DataFrame(catalogo_cuentas.items(), columns=["Cuenta", "Saldo"])
-        print("\nCatálogo de Cuentas Cargado:")
-        pd.options.display.float_format = '{:,.2f}'.format
-        print(df)
-    except Exception as e:
-        print(f"Error al cargar el catálogo de cuentas: {e}")
-
-def mostrar_estado_resultados(estado_resultados: dict) -> str:
-    try:
-        df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
-        print("\nEstado de Resultados:")
-        pd.options.display.float_format = '{:,.2f}'.format
-        print(df)
-    except Exception as e:
-        return f"Error al mostrar el estado de resultados: {e}"
 
