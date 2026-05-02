@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -82,7 +82,15 @@ def main():
                         print("Gracias por usar el programa de Razones Financieras. ¡Hasta luego!\n")
                         break
                     elif opcion == 1:
-                        print("Opción para calcular razón de actividad seleccionada. (Funcionalidad en desarrollo)")
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+                        if isinstance(capital_trabajo, dict):
+                            razon_actividad = calcular_razon_actividad(estado_resultados, balance_general, capital_trabajo)
+                            if isinstance(razon_actividad, dict):
+                                mostrar_razon_actividad(razon_actividad)
+                            else: 
+                                print(razon_actividad)  # Muestra el mensaje de error si no se pudo calcular la razón de actividad
+                        else:
+                            print(capital_trabajo)
                     elif opcion == 2:
                         print("Opción para calcular razón de liquidez seleccionada. (Funcionalidad en desarrollo)")   
                     elif opcion == 3:
