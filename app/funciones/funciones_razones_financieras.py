@@ -4,6 +4,7 @@ import pickle
 def input_catalogo_cuentas() -> dict | None:
     catalogo_cuentas = {}
     try:
+        año = input("Ingrese el año: ")
         acreedores_diversos = float(input("Ingrese el saldo de Acreedores Diversos: "))
         anticipos_clientes = float(input("Ingrese el saldo de Anticipos a Clientes: "))
         bancos = float(input("Ingrese el saldo de Bancos: "))
@@ -41,6 +42,7 @@ def input_catalogo_cuentas() -> dict | None:
         return None
     else:
         catalogo_cuentas = {
+            "Año": año,
             "Acreedores Diversos": acreedores_diversos,
             "Anticipos a Clientes": anticipos_clientes,
             "Bancos": bancos,
@@ -87,29 +89,30 @@ def calcular_estado_resultados(catalogo_cuentas: dict) -> dict | str:
         return "Error: Por favor, ingrese un valor numérico válido para las tasas.\n"
     try:
         # Asignar los valores del catálogo de cuentas a las variables correspondientes
+        estado_resultados["Año"] = catalogo_cuentas.get("Año", "")
         estado_resultados["Ventas"] = catalogo_cuentas.get("Ventas", 0)
         estado_resultados["Costo de Ventas"] = catalogo_cuentas.get("Costo de Ventas", 0)
-        estado_resultados["Utilidad Bruta"] = estado_resultados["Ventas"] - estado_resultados["Costo de Ventas"]
+        estado_resultados["UTILIDAD BRUTA"] = estado_resultados["Ventas"] - estado_resultados["Costo de Ventas"]
         estado_resultados["Gastos Generales"] = catalogo_cuentas.get("Gastos Generales", 0)
         estado_resultados["Gastos de Ventas"] = catalogo_cuentas.get("Gastos de Ventas", 0)
         estado_resultados["Gastos Administrativos"] = catalogo_cuentas.get("Gastos Administrativos", 0)
         estado_resultados["Gastos de Depreciacion"] = catalogo_cuentas.get("Gastos de Depreciacion", 0)
-        estado_resultados["Total Gastos"] = estado_resultados["Gastos Generales"] + estado_resultados["Gastos de Ventas"] + estado_resultados["Gastos Administrativos"] + estado_resultados["Gastos de Depreciacion"]
-        estado_resultados["Utilidad de Operacion"] = estado_resultados["Utilidad Bruta"] - estado_resultados["Total Gastos"]
+        estado_resultados["TOTAL GASTOS"] = estado_resultados["Gastos Generales"] + estado_resultados["Gastos de Ventas"] + estado_resultados["Gastos Administrativos"] + estado_resultados["Gastos de Depreciacion"]
+        estado_resultados["UTILIDAD DE OPERACION"] = estado_resultados["UTILIDAD BRUTA"] - estado_resultados["TOTAL GASTOS"]
         estado_resultados["Gastos Financieros"] = catalogo_cuentas.get("Gastos Financieros", 0)
         estado_resultados["Productos Financieros"] = catalogo_cuentas.get("Productos Financieros", 0)
-        estado_resultados["Resultado Integral de Financiamiento"]=estado_resultados["Gastos Financieros"]-estado_resultados["Productos Financieros"]
+        estado_resultados["RESULTADO INTEGRAL DE FINANCIAMIENTO"]=estado_resultados["Gastos Financieros"]-estado_resultados["Productos Financieros"]
         estado_resultados["Otros Gastos"] = catalogo_cuentas.get("Otros Gastos", 0)
         estado_resultados["Otros Productos"] = catalogo_cuentas.get("Otros Productos", 0)
-        estado_resultados["Total Partidas Discontinuas"]=estado_resultados["Otros Gastos"]-estado_resultados["Otros Productos"]
-        estado_resultados["Total Otros Gastos y Productos"]=estado_resultados["Resultado Integral de Financiamiento"]+estado_resultados["Total Partidas Discontinuas"]
-        estado_resultados["Utilidad Antes de Impuestos"]=estado_resultados["Utilidad de Operacion"]-estado_resultados["Total Otros Gastos y Productos"]
+        estado_resultados["TOTAL PERTIDAS DISCONTINUAS"]=estado_resultados["Otros Gastos"]-estado_resultados["Otros Productos"]
+        estado_resultados["TOTAL OTROS GASTOS Y PRODUCTOS"]=estado_resultados["RESULTADO INTEGRAL DE FINANCIAMIENTO"]+estado_resultados["TOTAL PERTIDAS DISCONTINUAS"]
+        estado_resultados["UTILIDAD ANTES DE IMPUESTOS"]=estado_resultados["UTILIDAD DE OPERACION"]-estado_resultados["TOTAL OTROS GASTOS Y PRODUCTOS"]
         estado_resultados["Porcentaje ISR"]=isr/100
         estado_resultados["Porcentaje PTU"]=ptu/100
-        estado_resultados["Valor ISR"]=estado_resultados["Utilidad Antes de Impuestos"]*estado_resultados["Porcentaje ISR"]
-        estado_resultados["Valor PTU"]=estado_resultados["Utilidad Antes de Impuestos"]*estado_resultados["Porcentaje PTU"]
-        estado_resultados["Total Impuestos"]=estado_resultados["Valor ISR"]+estado_resultados["Valor PTU"]
-        estado_resultados["Utilidad Neta"]=estado_resultados["Utilidad Antes de Impuestos"]-estado_resultados["Total Impuestos"]
+        estado_resultados["Valor ISR"]=estado_resultados["UTILIDAD ANTES DE IMPUESTOS"]*estado_resultados["Porcentaje ISR"]
+        estado_resultados["Valor PTU"]=estado_resultados["UTILIDAD ANTES DE IMPUESTOS"]*estado_resultados["Porcentaje PTU"]
+        estado_resultados["TOTAL IMPUESTOS"]=estado_resultados["Valor ISR"]+estado_resultados["Valor PTU"]
+        estado_resultados["UTILIDAD NETA"]=estado_resultados["UTILIDAD ANTES DE IMPUESTOS"]-estado_resultados["TOTAL IMPUESTOS"]
     except KeyError as e:
         return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas.\n"
     return estado_resultados
@@ -118,12 +121,13 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
     balance_general = {}
     try:
         # Asignar los valores del catálogo de cuentas a las variables correspondientes
+        balance_general["Año"] = catalogo_cuentas.get("Año", "")
         balance_general["ACTIVO CIRCULANTE"] = ""
         balance_general["Bancos"] = catalogo_cuentas.get("Bancos", 0)
         balance_general["Clientes"] = catalogo_cuentas.get("Clientes", 0)
         balance_general["Inventarios"] = catalogo_cuentas.get("Inventarios", 0)
         balance_general["Papelería y Utiles"] = catalogo_cuentas.get("Papelería y Utiles", 0)
-        balance_general["Total Activo Circulante"] = catalogo_cuentas.get("Bancos", 0) + catalogo_cuentas.get("Clientes", 0) + catalogo_cuentas.get("Inventarios", 0) + catalogo_cuentas.get("Papelería y Utiles", 0)
+        balance_general["TOTAL ACTIVO CIRCULANTE"] = catalogo_cuentas.get("Bancos", 0) + catalogo_cuentas.get("Clientes", 0) + catalogo_cuentas.get("Inventarios", 0) + catalogo_cuentas.get("Papelería y Utiles", 0)
         balance_general["ACTIVO NO CIRCULANTE"] = ""
         balance_general["Terreno y Edificio"] = catalogo_cuentas.get("Terreno y Edificio", 0)
         balance_general["Maquinaria y Equipo"] = catalogo_cuentas.get("Maquinaria y Equipo", 0)
@@ -134,30 +138,30 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
         balance_general["Inversiones Permanentes"] = catalogo_cuentas.get("Inversiones Permanentes", 0)
         balance_general["OTROS ACTIVOS"] = ""
         balance_general["Gastos de Instalacion"] = catalogo_cuentas.get("Gastos de Instalacion", 0)
-        balance_general["Total Activo No Circulante"] = catalogo_cuentas.get("Maquinaria y Equipo", 0) + catalogo_cuentas.get("Mobiliario y Accesorios", 0) + catalogo_cuentas.get("Terreno y Edificio", 0) + catalogo_cuentas.get("Inversiones Permanentes", 0) + catalogo_cuentas.get("Equipo de Transporte",0) + catalogo_cuentas.get("Equipo de Cómputo", 0) + catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
-        balance_general["Total Activo"] = balance_general["Total Activo Circulante"] + balance_general["Total Activo No Circulante"] + balance_general.get("Gastos de Instalacion", 0)
+        balance_general["TOTAL ACTIVO NO CIRCULANTE"] = catalogo_cuentas.get("Maquinaria y Equipo", 0) + catalogo_cuentas.get("Mobiliario y Accesorios", 0) + catalogo_cuentas.get("Terreno y Edificio", 0) + catalogo_cuentas.get("Inversiones Permanentes", 0) + catalogo_cuentas.get("Equipo de Transporte",0) + catalogo_cuentas.get("Equipo de Cómputo", 0) + catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
+        balance_general["TOTAL ACTIVO"] = balance_general["TOTAL ACTIVO CIRCULANTE"] + balance_general["TOTAL ACTIVO NO CIRCULANTE"] + balance_general.get("Gastos de Instalacion", 0)
         balance_general["PASIVO A CORTO PLAZO"] = ""
         balance_general["Proveedores"] = catalogo_cuentas.get("Proveedores", 0)
         balance_general["Acreedores Diversos"] = catalogo_cuentas.get("Acreedores Diversos", 0)
         balance_general["Anticipos a Clientes"] = catalogo_cuentas.get("Anticipos a Clientes", 0)
         balance_general["Gastos por Pagar"] = catalogo_cuentas.get("Gastos por Pagar", 0)
         balance_general["Hipotecas por Pagar (Corto Plazo)"] = catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0)
-        balance_general["Impuestos por Pagar"] = estado_resultados.get("Total Impuestos", 0)
+        balance_general["Impuestos por Pagar"] = estado_resultados.get("TOTAL IMPUESTOS", 0)
         balance_general["Préstamos Bancarios (Corto Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0)
-        balance_general["Total Pasivo Circulante"] = catalogo_cuentas.get("Proveedores", 0) + catalogo_cuentas.get("Gastos por Pagar", 0) + catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0) + catalogo_cuentas.get("Acreedores Diversos", 0) + catalogo_cuentas.get("Anticipos a Clientes", 0) + estado_resultados.get("Total Impuestos", 0)
+        balance_general["TOTAL PASIVO CIRCULANTE"] = catalogo_cuentas.get("Proveedores", 0) + catalogo_cuentas.get("Gastos por Pagar", 0) + catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0) + catalogo_cuentas.get("Acreedores Diversos", 0) + catalogo_cuentas.get("Anticipos a Clientes", 0) + estado_resultados.get("TOTAL IMPUESTOS", 0)
         balance_general["PASIVO A LARGO PLAZO"] = ""
         balance_general["Hipotecas por Pagar (Largo Plazo)"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0)
         balance_general["Préstamos Bancarios (Largo Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
-        balance_general["Total Pasivo No Circulante"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
-        balance_general["Total Pasivo"] = balance_general["Total Pasivo Circulante"] + balance_general["Total Pasivo No Circulante"]
+        balance_general["TOTAL PASIVO NO CIRCULANTE"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
+        balance_general["TOTAL PASIVO"] = balance_general["TOTAL PASIVO CIRCULANTE"] + balance_general["TOTAL PASIVO NO CIRCULANTE"]
         balance_general["CAPITAL CONTRIBUIDO"] = ""
         balance_general["Capital Social"] = catalogo_cuentas.get("Capital Social", 0)
         balance_general["CAPITAL GANADO"] = ""
         balance_general["Utilidades del Ejercicio Anterior"] = catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0)
         balance_general["Reserva Legal"] = catalogo_cuentas.get("Reserva Legal", 0)
-        balance_general["Uitilidad del Ejercicio"] = estado_resultados.get("Utilidad Neta", 0)
-        balance_general["Capital Contable"] = catalogo_cuentas.get("Capital Social", 0) + catalogo_cuentas.get("Reserva Legal", 0) + catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0) + estado_resultados.get("Utilidad Neta", 0)
-        balance_general["Total Pasivo y Capital Contable"] = balance_general["Total Pasivo"] + balance_general["Capital Contable"]
+        balance_general["Uitilidad del Ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0)
+        balance_general["Capital Contable"] = catalogo_cuentas.get("Capital Social", 0) + catalogo_cuentas.get("Reserva Legal", 0) + catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0) + estado_resultados.get("UTILIDAD NETA", 0)
+        balance_general["TOTAL PASIVO Y CAPITAL CONTABLE"] = balance_general["TOTAL PASIVO"] + balance_general["Capital Contable"]
     except KeyError as e:
         return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas.\n"
     return balance_general
@@ -165,17 +169,46 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
 def calcular_capital_trabajo(balance_general: dict) -> dict | str:
     capital_trabajo = {}
     try:
-        capital_trabajo["Total Activo Circulante"] = balance_general.get("Total Activo Circulante", 0)
-        capital_trabajo["Total Pasivo Circulante"] = balance_general.get("Total Pasivo Circulante", 0)
-        capital_trabajo["Capital de Trabajo"] = balance_general.get("Total Activo Circulante", 0) - balance_general.get("Total Pasivo Circulante", 0)
-        return capital_trabajo
+        capital_trabajo["Año"] = balance_general.get("Año", "")
+        capital_trabajo["TOTAL ACTIVO CIRCULANTE"] = balance_general.get("TOTAL ACTIVO CIRCULANTE", 0)
+        capital_trabajo["TOTAL PASIVO CIRCULANTE"] = balance_general.get("TOTAL PASIVO CIRCULANTE", 0)
+        capital_trabajo["CAPITAL DE TRABAJO"] = balance_general.get("TOTAL ACTIVO CIRCULANTE", 0) - balance_general.get("TOTAL PASIVO CIRCULANTE", 0)
     except KeyError as e:
         return f"Error: La cuenta '{e.args[0]}' no se encuentra en el balance general.\n"
     except Exception as e:
         return f"Error al calcular el capital de trabajo: {e}\n"
-    
+    return capital_trabajo
+
 # Funciones para calcular las razones financieras
 
+def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, capital_trabajo: dict) -> dict | str:
+    razon_actividad = {}
+    try:
+        razon_actividad["Año"] = estado_resultados.get("Año", "")
+        razon_actividad["Costo de Ventas"] = estado_resultados.get("Costo de Ventas", 0)
+        razon_actividad["Inventario"]= balance_general.get("Inventarios", 0)
+        razon_actividad["ROTACION DE INVENTARIOS"] = razon_actividad["Costo de Ventas"] / razon_actividad["Inventario"]
+        razon_actividad["Ventas"] = estado_resultados.get("Ventas", 0)
+        razon_actividad["Cuentas por Cobrar"] = balance_general.get("Clientes", 0)
+        razon_actividad["ROTACION CUENTAS POR COBRAR"] = razon_actividad["Ventas"] / razon_actividad["Cuentas por Cobrar"]
+        razon_actividad["Costo de Ventas 2"] = razon_actividad["Costo de Ventas"]
+        razon_actividad["Cuentas por Pagar"] = balance_general.get("Proveedores", 0)
+        razon_actividad["ROTACION DE CUENTAS POR PAGAR"] = razon_actividad["Costo de Ventas 2"] / razon_actividad["Cuentas por Pagar"]
+        razon_actividad["Ventas 2"] = razon_actividad["Ventas"]
+        razon_actividad["TOTAL ACTIVO NO CIRCULANTE"] = balance_general.get("TOTAL ACTIVO NO CIRCULANTE", 0)
+        razon_actividad["ROTACION DE ACTIVOS FIJOS"] = razon_actividad["Ventas 2"] / razon_actividad["TOTAL ACTIVO NO CIRCULANTE"]
+        razon_actividad["Activos Totales"] = balance_general.get("TOTAL ACTIVO", 0)
+        razon_actividad["Ventas 3"] = razon_actividad["Ventas"]
+        razon_actividad["Activos Totales"] = balance_general.get("TOTAL ACTIVO", 0)
+        razon_actividad["ROTACION DE ACTIVOS TOTALES"] = razon_actividad["Ventas 3"] / razon_actividad["Activos Totales"]
+        razon_actividad["Ventas 2"] = razon_actividad["Ventas"]
+        razon_actividad["CAPITAL DE TRABAJO"] = capital_trabajo.get("CAPITAL DE TRABAJO", 0)
+        razon_actividad["ROTACION DE CAPITAL DE TRABAJO"] = razon_actividad["Ventas 2"] / razon_actividad["CAPITAL DE TRABAJO"]
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón de actividad: {e}\n"
+    return razon_actividad
 
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
@@ -214,6 +247,15 @@ def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
         print(f"{df}\n")
     except Exception as e:
         return f"Error al mostrar el capital de trabajo: {e}"
+
+def mostrar_razon_actividad(razon_actividad: dict) -> str:
+    try:
+        df=pd.DataFrame(razon_actividad.items(), columns=["Concepto", "Valor"])
+        print("\nRazón de Actividad:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        print(f"{df}\n")
+    except Exception as e:
+        return f"Error al mostrar la razón de actividad: {e}"
     
 
 # Funciones para la persistencia de datos utilizando pickle
