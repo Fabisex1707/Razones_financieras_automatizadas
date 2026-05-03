@@ -6,10 +6,10 @@ def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
     print(f"***Esete programa le permitirá calcular diversas razones financieras utilizando los datos de su catálogo de cuentas.***\n")
     estado_catalogo= cargar_datos_catalogo("catalogo_cuentas.pkl")
-    if estado_catalogo is None:
-        print(f"No se encontraron datos precargados. Por favor, ingrese los datos del catálogo de cuentas.\n")
-    else:
+    if isinstance(estado_catalogo, dict):
         print("Datos del catalogo de cuentas encontrados y cargados exitosamente.")
+    else:
+        print(f"No se encontraron datos precargados. Por favor, ingrese los datos del catálogo de cuentas.\n")
 
     estado_resultados = None  # Variable para almacenar el estado de resultados calculado
     balance_general = None  # Variable para almacenar el balance general calculado
@@ -29,39 +29,40 @@ def main():
 
         if opcion == 1:
             catalogo_cuentas = input_catalogo_cuentas()
-            if catalogo_cuentas is None:
-                pass
+            if isinstance(catalogo_cuentas, dict):
+                resultado_catalogo = guardar_datos(catalogo_cuentas, "catalogo_cuentas.pkl")
+                print(resultado_catalogo)
             else:
-                guardar_datos(catalogo_cuentas, "catalogo_cuentas.pkl")
+                print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo ingresar el catálogo
         elif opcion == 2:
             catalogo_cuentas = cargar_datos_catalogo("catalogo_cuentas.pkl")
             if isinstance(catalogo_cuentas, dict):
-                mostrar_catalogo_cuentas(catalogo_cuentas)
+                print(mostrar_catalogo_cuentas(catalogo_cuentas))
             else:
-                print("Error: No hay datos del catálogo de cuentas cargados.\n")
+                print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo cargar el catálogo
         elif opcion == 3:
             catalogo_cuentas = cargar_datos_catalogo("catalogo_cuentas.pkl")
             if isinstance(catalogo_cuentas, dict):
                 estado_resultados = calcular_estado_resultados(catalogo_cuentas)
                 if isinstance(estado_resultados, dict):
-                    mostrar_estado_resultados(estado_resultados)
+                    print(mostrar_estado_resultados(estado_resultados))
                 else:
                     print(estado_resultados)  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
             else:
-                print("Error: No hay datos del catálogo de cuentas cargados.\n")  # Muestra el mensaje de error si no se pudo cargar el catálogo
+                print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo cargar el catálogo
         elif opcion == 4:
             catalogo_cuentas = cargar_datos_catalogo("catalogo_cuentas.pkl")
             if isinstance(catalogo_cuentas, dict):
                 if isinstance(estado_resultados, dict):
                     balance_general = calcular_balance_general(catalogo_cuentas, estado_resultados)
                     if isinstance(balance_general, dict):
-                        mostrar_balance_general(balance_general)
+                        print(mostrar_balance_general(balance_general))
                     else:
                         print(balance_general)  # Muestra el mensaje de error si no se pudo calcular el balance general
                 else:
-                    print("Error: No calculo primero el estado de resultados! \n")  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
+                    print(estado_resultados)  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
             else:
-                print("Error: No hay datos del catálogo de cuentas cargados.\n")  # Muestra el mensaje de error si no se pudo cargar el catálogo
+                print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo cargar el catálogo
         elif opcion == 5:
             if isinstance(estado_resultados, dict) and isinstance(balance_general, dict):
                 while True:
@@ -86,7 +87,7 @@ def main():
                         if isinstance(capital_trabajo, dict):
                             razon_actividad = calcular_razon_actividad(estado_resultados, balance_general, capital_trabajo)
                             if isinstance(razon_actividad, dict):
-                                mostrar_razon_actividad(razon_actividad)
+                                print(mostrar_razon_actividad(razon_actividad))
                             else: 
                                 print(razon_actividad)  # Muestra el mensaje de error si no se pudo calcular la razón de actividad
                         else:
@@ -110,10 +111,6 @@ def main():
                     break
         else:
             print("Opción no válida. Por favor, seleccione una opción del menú.\n")
-
-
-
-
 
 
 if __name__ == "__main__":
