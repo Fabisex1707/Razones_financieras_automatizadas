@@ -1,7 +1,7 @@
 import pandas as pd 
 import os
 import pickle
-def input_catalogo_cuentas() -> dict | None:
+def input_catalogo_cuentas() -> dict | str:
     catalogo_cuentas = {}
     try:
         año = input("Ingrese el año: ")
@@ -38,8 +38,7 @@ def input_catalogo_cuentas() -> dict | None:
         utilidades_ejercicio_anterior = float(input("Ingrese el saldo de Utilidades del Ejercicio Anterior: "))
         ventas = float(input("Ingrese el saldo de Ventas: "))
     except ValueError:
-        print("Error: Por favor, ingrese un valor numérico válido.\n")
-        return None
+        return "Error: Por favor, ingrese un valor numérico válido.\n"
     else:
         catalogo_cuentas = {
             "Año": año,
@@ -212,21 +211,21 @@ def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, cap
 
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
-def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> None:
+def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> str:
     try:
         df=pd.DataFrame(catalogo_cuentas.items(), columns=["Cuenta", "Saldo"])
         print("\nCatálogo de Cuentas Cargado:")
         pd.options.display.float_format = '{:,.2f}'.format
-        print(f"{df}\n")
+        return f"{df}\n"
     except Exception as e:
-        print(f"Error al cargar el catálogo de cuentas: {e}")
+        return f"Error al cargar el catálogo de cuentas: {e}"
 
 def mostrar_estado_resultados(estado_resultados: dict) -> str:
     try:
         df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
         print("\nEstado de Resultados:")
         pd.options.display.float_format = '{:,.2f}'.format
-        print(f"{df}\n")
+        return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar el estado de resultados: {e}"
     
@@ -235,7 +234,7 @@ def mostrar_balance_general(balance_general: dict) -> str:
         df=pd.DataFrame(balance_general.items(), columns=["Concepto", "Valor"])
         print("\nBalance General:")
         pd.options.display.float_format = '{:,.2f}'.format
-        print(f"{df}\n")
+        return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar el balance general: {e}"
     
@@ -244,7 +243,7 @@ def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
         df=pd.DataFrame(capital_trabajo.items(), columns=["Concepto", "Valor"])
         print("\nCapital de Trabajo:")
         pd.options.display.float_format = '{:,.2f}'.format
-        print(f"{df}\n")
+        return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar el capital de trabajo: {e}"
 
@@ -253,13 +252,13 @@ def mostrar_razon_actividad(razon_actividad: dict) -> str:
         df=pd.DataFrame(razon_actividad.items(), columns=["Concepto", "Valor"])
         print("\nRazón de Actividad:")
         pd.options.display.float_format = '{:,.2f}'.format
-        print(f"{df}\n")
+        return f"{df}\n"
     except Exception as e:
-        return f"Error al mostrar la razón de actividad: {e}"
+        return f"Error al mostrar la razón de actividad: {e}\n"
     
 
 # Funciones para la persistencia de datos utilizando pickle
-def cargar_datos_catalogo(nombre_archivo):
+def cargar_datos_catalogo(nombre_archivo) -> dict | str:
     """Intenta cargar el estado guardado (diccionarios y variables) desde un archivo."""
     archivo_datos = nombre_archivo
     if os.path.exists(archivo_datos):
@@ -270,8 +269,7 @@ def cargar_datos_catalogo(nombre_archivo):
         except Exception as e:
             return f"Error al cargar datos: {e}. Iniciando con datos vacíos.\n"
     else:
-        # Si no hay archivo retorna none
-        return None
+        return f"No se encontró el archivo '{archivo_datos}'. Iniciando con datos vacíos.\n"
 
 def guardar_datos(datos, nombre_archivo):
     """Guarda el estado actual (diccionarios y variables) en un archivo .pkl."""
@@ -279,7 +277,7 @@ def guardar_datos(datos, nombre_archivo):
     try:
         with open(archivo_datos, "wb") as f:
             pickle.dump(datos, f)
-        print("--- Datos guardados exitosamente ---")
+        return "--- Datos guardados exitosamente ---\n"
     except Exception as e:
-        print(f"Error al guardar datos: {e}")
+        return f"Error al guardar datos: {e}\n"
 
