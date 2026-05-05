@@ -91,12 +91,14 @@ def calcular_estado_resultados(catalogo_cuentas: dict) -> dict | str:
         estado_resultados["Año"] = catalogo_cuentas.get("Año", "")
         estado_resultados["Ventas"] = catalogo_cuentas.get("Ventas", 0)
         estado_resultados["Costo de Ventas"] = catalogo_cuentas.get("Costo de Ventas", 0)
-        estado_resultados["UTILIDAD BRUTA"] = estado_resultados["Ventas"] - estado_resultados["Costo de Ventas"]
+        utilidad_bruta = estado_resultados["Ventas"] - estado_resultados["Costo de Ventas"]
+        estado_resultados["UTILIDAD BRUTA"] = utilidad_bruta
         estado_resultados["Gastos Generales"] = catalogo_cuentas.get("Gastos Generales", 0)
         estado_resultados["Gastos de Ventas"] = catalogo_cuentas.get("Gastos de Ventas", 0)
         estado_resultados["Gastos Administrativos"] = catalogo_cuentas.get("Gastos Administrativos", 0)
         estado_resultados["Gastos de Depreciacion"] = catalogo_cuentas.get("Gastos de Depreciacion", 0)
-        estado_resultados["TOTAL GASTOS"] = estado_resultados["Gastos Generales"] + estado_resultados["Gastos de Ventas"] + estado_resultados["Gastos Administrativos"] + estado_resultados["Gastos de Depreciacion"]
+        total_gastos = estado_resultados["Gastos Generales"] + estado_resultados["Gastos de Ventas"] + estado_resultados["Gastos Administrativos"] + estado_resultados["Gastos de Depreciacion"]
+        estado_resultados["TOTAL GASTOS"] = total_gastos
         estado_resultados["UTILIDAD DE OPERACION"] = estado_resultados["UTILIDAD BRUTA"] - estado_resultados["TOTAL GASTOS"]
         estado_resultados["Gastos Financieros"] = catalogo_cuentas.get("Gastos Financieros", 0)
         estado_resultados["Productos Financieros"] = catalogo_cuentas.get("Productos Financieros", 0)
@@ -121,13 +123,11 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
     try:
         # Asignar los valores del catálogo de cuentas a las variables correspondientes
         balance_general["Año"] = catalogo_cuentas.get("Año", "")
-        balance_general["ACTIVO CIRCULANTE"] = ""
         balance_general["Bancos"] = catalogo_cuentas.get("Bancos", 0)
         balance_general["Clientes"] = catalogo_cuentas.get("Clientes", 0)
         balance_general["Inventarios"] = catalogo_cuentas.get("Inventarios", 0)
         balance_general["Papelería y Utiles"] = catalogo_cuentas.get("Papelería y Utiles", 0)
         balance_general["TOTAL ACTIVO CIRCULANTE"] = catalogo_cuentas.get("Bancos", 0) + catalogo_cuentas.get("Clientes", 0) + catalogo_cuentas.get("Inventarios", 0) + catalogo_cuentas.get("Papelería y Utiles", 0)
-        balance_general["ACTIVO NO CIRCULANTE"] = ""
         balance_general["Terreno y Edificio"] = catalogo_cuentas.get("Terreno y Edificio", 0)
         balance_general["Maquinaria y Equipo"] = catalogo_cuentas.get("Maquinaria y Equipo", 0)
         balance_general["Mobiliario y Accesorios"] = catalogo_cuentas.get("Mobiliario y Accesorios", 0)
@@ -135,11 +135,9 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
         balance_general["Equipo de Cómputo"] = catalogo_cuentas.get("Equipo de Cómputo", 0)
         balance_general["Depreciación Acumulada Activos Fijos"] = catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
         balance_general["Inversiones Permanentes"] = catalogo_cuentas.get("Inversiones Permanentes", 0)
-        balance_general["OTROS ACTIVOS"] = ""
         balance_general["Gastos de Instalacion"] = catalogo_cuentas.get("Gastos de Instalacion", 0)
         balance_general["TOTAL ACTIVO NO CIRCULANTE"] = catalogo_cuentas.get("Maquinaria y Equipo", 0) + catalogo_cuentas.get("Mobiliario y Accesorios", 0) + catalogo_cuentas.get("Terreno y Edificio", 0) + catalogo_cuentas.get("Inversiones Permanentes", 0) + catalogo_cuentas.get("Equipo de Transporte",0) + catalogo_cuentas.get("Equipo de Cómputo", 0) + catalogo_cuentas.get("Depreciación Acumulada Activos Fijos", 0)
         balance_general["TOTAL ACTIVO"] = balance_general["TOTAL ACTIVO CIRCULANTE"] + balance_general["TOTAL ACTIVO NO CIRCULANTE"] + balance_general.get("Gastos de Instalacion", 0)
-        balance_general["PASIVO A CORTO PLAZO"] = ""
         balance_general["Proveedores"] = catalogo_cuentas.get("Proveedores", 0)
         balance_general["Acreedores Diversos"] = catalogo_cuentas.get("Acreedores Diversos", 0)
         balance_general["Anticipos a Clientes"] = catalogo_cuentas.get("Anticipos a Clientes", 0)
@@ -148,17 +146,15 @@ def calcular_balance_general(catalogo_cuentas: dict, estado_resultados: dict) ->
         balance_general["Impuestos por Pagar"] = estado_resultados.get("TOTAL IMPUESTOS", 0)
         balance_general["Préstamos Bancarios (Corto Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0)
         balance_general["TOTAL PASIVO CIRCULANTE"] = catalogo_cuentas.get("Proveedores", 0) + catalogo_cuentas.get("Gastos por Pagar", 0) + catalogo_cuentas.get("Hipotecas por Pagar (Corto Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Corto Plazo)", 0) + catalogo_cuentas.get("Acreedores Diversos", 0) + catalogo_cuentas.get("Anticipos a Clientes", 0) + estado_resultados.get("TOTAL IMPUESTOS", 0)
-        balance_general["PASIVO A LARGO PLAZO"] = ""
         balance_general["Hipotecas por Pagar (Largo Plazo)"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0)
         balance_general["Préstamos Bancarios (Largo Plazo)"] = catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
         balance_general["TOTAL PASIVO NO CIRCULANTE"] = catalogo_cuentas.get("Hipotecas por Pagar (Largo Plazo)", 0) + catalogo_cuentas.get("Préstamos Bancarios (Largo Plazo)", 0)
         balance_general["TOTAL PASIVO"] = balance_general["TOTAL PASIVO CIRCULANTE"] + balance_general["TOTAL PASIVO NO CIRCULANTE"]
-        balance_general["CAPITAL CONTRIBUIDO"] = ""
         balance_general["Capital Social"] = catalogo_cuentas.get("Capital Social", 0)
-        balance_general["CAPITAL GANADO"] = ""
         balance_general["Utilidades del Ejercicio Anterior"] = catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0)
         balance_general["Reserva Legal"] = catalogo_cuentas.get("Reserva Legal", 0)
-        balance_general["Uitilidad del Ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0)
+        balance_general["Utilidad del Ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0)
+        balance_general["Total Capital Ganado"] = balance_general["Utilidades del Ejercicio Anterior"] + balance_general["Reserva Legal"] + balance_general["Utilidad del Ejercicio"]
         balance_general["Capital Contable"] = catalogo_cuentas.get("Capital Social", 0) + catalogo_cuentas.get("Reserva Legal", 0) + catalogo_cuentas.get("Utilidades del Ejercicio Anterior", 0) + estado_resultados.get("UTILIDAD NETA", 0)
         balance_general["TOTAL PASIVO Y CAPITAL CONTABLE"] = balance_general["TOTAL PASIVO"] + balance_general["Capital Contable"]
     except KeyError as e:
@@ -190,24 +186,22 @@ def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, cap
         razon_actividad["Ventas"] = estado_resultados.get("Ventas", 0)
         razon_actividad["Cuentas por Cobrar"] = balance_general.get("Clientes", 0)
         razon_actividad["ROTACION CUENTAS POR COBRAR"] = razon_actividad["Ventas"] / razon_actividad["Cuentas por Cobrar"]
-        razon_actividad["Costo de Ventas 2"] = razon_actividad["Costo de Ventas"]
         razon_actividad["Cuentas por Pagar"] = balance_general.get("Proveedores", 0)
-        razon_actividad["ROTACION DE CUENTAS POR PAGAR"] = razon_actividad["Costo de Ventas 2"] / razon_actividad["Cuentas por Pagar"]
-        razon_actividad["Ventas 2"] = razon_actividad["Ventas"]
+        razon_actividad["ROTACION DE CUENTAS POR PAGAR"] = razon_actividad["Costo de Ventas"] / razon_actividad["Cuentas por Pagar"]
         razon_actividad["TOTAL ACTIVO NO CIRCULANTE"] = balance_general.get("TOTAL ACTIVO NO CIRCULANTE", 0)
-        razon_actividad["ROTACION DE ACTIVOS FIJOS"] = razon_actividad["Ventas 2"] / razon_actividad["TOTAL ACTIVO NO CIRCULANTE"]
+        razon_actividad["ROTACION DE ACTIVOS FIJOS"] = razon_actividad["Ventas"] / razon_actividad["TOTAL ACTIVO NO CIRCULANTE"]
         razon_actividad["Activos Totales"] = balance_general.get("TOTAL ACTIVO", 0)
-        razon_actividad["Ventas 3"] = razon_actividad["Ventas"]
         razon_actividad["Activos Totales"] = balance_general.get("TOTAL ACTIVO", 0)
-        razon_actividad["ROTACION DE ACTIVOS TOTALES"] = razon_actividad["Ventas 3"] / razon_actividad["Activos Totales"]
-        razon_actividad["Ventas 2"] = razon_actividad["Ventas"]
+        razon_actividad["ROTACION DE ACTIVOS TOTALES"] = razon_actividad["Ventas"] / razon_actividad["Activos Totales"]
         razon_actividad["CAPITAL DE TRABAJO"] = capital_trabajo.get("CAPITAL DE TRABAJO", 0)
-        razon_actividad["ROTACION DE CAPITAL DE TRABAJO"] = razon_actividad["Ventas 2"] / razon_actividad["CAPITAL DE TRABAJO"]
+        razon_actividad["ROTACION DE CAPITAL DE TRABAJO"] = razon_actividad["Ventas"] / razon_actividad["CAPITAL DE TRABAJO"]
     except KeyError as e:
         return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
     except Exception as e:
         return f"Error al calcular la razón de actividad: {e}\n"
     return razon_actividad
+
+
 
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
@@ -222,7 +216,31 @@ def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> str:
 
 def mostrar_estado_resultados(estado_resultados: dict) -> str:
     try:
-        df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
+        #df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
+        df=pd.DataFrame({
+            "Valor":[
+                estado_resultados.get("Año", 0), estado_resultados.get("Ventas", 0), estado_resultados.get("Costo de Ventas", 0), "", estado_resultados.get("Gastos Generales", 0),
+                estado_resultados.get("Gastos de Ventas", 0), estado_resultados.get("Gastos Administrativos", 0), estado_resultados.get("Gastos de Depreciacion", 0), estado_resultados.get("TOTAL GASTOS", 0),
+                "", estado_resultados.get("Gastos Financieros", 0), estado_resultados.get("Productos Financieros", 0), estado_resultados.get("RESULTADO INTEGRAL DE FINANCIAMIENTO", 0), estado_resultados.get("Otros Gastos", 0),
+                estado_resultados.get("Otros Productos", 0), estado_resultados.get("TOTAL PERTIDAS DISCONTINUAS", 0), estado_resultados.get("TOTAL OTROS GASTOS Y PRODUCTOS", 0), "", estado_resultados.get("Porcentaje ISR", 0),
+                estado_resultados.get("Porcentaje PTU", 0), estado_resultados.get("Valor ISR", 0), estado_resultados.get("Valor PTU", 0), estado_resultados.get("TOTAL IMPUESTOS", 0), ""
+            ],
+            "Utilidad":[
+                "", "", "", estado_resultados.get("UTILIDAD BRUTA", 0), "",
+                "", "", "", "",
+                estado_resultados.get("UTILIDAD DE OPERACION", 0), "", "", "", "",
+                "", "", "", estado_resultados.get("UTILIDAD ANTES DE IMPUESTOS", 0), "",
+                "", "", "", "", estado_resultados.get("UTILIDAD NETA", 0)
+            ]
+        })
+
+        df.index = [
+            "Año", "Ventas", "Costo de Ventas", "UTILIDAD BRUTA", "Gastos Generales",
+            "Gastos de Ventas", "Gastos Administrativos", "Gastos de Depreciacion", "TOTAL GASTOS",
+            "UTILIDAD DE OPERACION", "Gastos Financieros", "Productos Financieros", "RESULTADO INTEGRAL DE FINANCIAMIENTO", "Otros Gastos",
+            "Otros Productos", "TOTAL PERTIDAS DISCONTINUAS", "TOTAL OTROS GASTOS Y PRODUCTOS", "UTILIDAD ANTES DE IMPUESTOS", "Porcentaje ISR",
+            "Porcentaje PTU", "Valor ISR", "Valor PTU", "TOTAL IMPUESTOS", "UTILIDAD NETA"
+        ]
         print("\nEstado de Resultados:")
         pd.options.display.float_format = '{:,.2f}'.format
         return f"{df}\n"
@@ -231,7 +249,41 @@ def mostrar_estado_resultados(estado_resultados: dict) -> str:
     
 def mostrar_balance_general(balance_general: dict) -> str:
     try:
-        df=pd.DataFrame(balance_general.items(), columns=["Concepto", "Valor"])
+        df=pd.DataFrame({
+            "Valor":[
+                balance_general.get("Año", 0), "", balance_general.get("Bancos", 0), balance_general.get("Clientes", 0), balance_general.get("Inventarios", 0), balance_general.get("Papelería y Utiles", 0), "",
+                "", balance_general.get("Terreno y Edificio", 0), balance_general.get("Maquinaria y Equipo", 0), balance_general.get("Mobiliario y Accesorios", 0), balance_general.get("Equipo de Transporte", 0), balance_general.get("Equipo de Cómputo", 0), balance_general.get("Depreciación Acumulada Activos Fijos", 0), 
+                balance_general.get("Inversiones Permanentes", 0), "", balance_general.get("Gastos de Instalacion", 0), "", "", "", balance_general.get("Proveedores", 0), 
+                balance_general.get("Acreedores Diversos", 0), balance_general.get("Anticipos a Clientes", 0), balance_general.get("Gastos por Pagar", 0), balance_general.get("Hipotecas por Pagar (Corto Plazo)", 0), balance_general.get("Impuestos por Pagar", 0), balance_general.get("Préstamos Bancarios (Corto Plazo)", 0), "",
+                "", balance_general.get("Hipotecas por Pagar (Largo Plazo)", 0),balance_general.get("Préstamos Bancarios (Largo Plazo)", 0), "", "", "", balance_general.get("Capital Social", 0), 
+                "", balance_general.get("Utilidades del Ejercicio Anterior", 0), balance_general.get("Reserva Legal", 0), balance_general.get("Utilidad del Ejercicio", 0), "", "", ""
+            ], 
+            "Suma Activo/Pasivo":[
+                "", "", "", "", "", "", balance_general.get("TOTAL ACTIVO CIRCULANTE", 0),
+                "", "", "", "", "", "", "", 
+                "", "", "", balance_general.get("TOTAL ACTIVO NO CIRCULANTE", 0), "","", "",
+                "", "", "", "", "", "", balance_general.get("TOTAL PASIVO CIRCULANTE", 0),
+                "", "", "", balance_general.get("TOTAL PASIVO NO CIRCULANTE", 0), "", "", balance_general.get("Capital Social", 0),
+                "", "", "", "", balance_general.get("Total Capital Ganado", 0), balance_general.get("Capital Contable", 0), ""
+            ], 
+            "Total Activo/Pasivo":[
+                "", "", "", "", "", "", "",
+                "", "", "", "", "", "", "", 
+                "", "", "", "", balance_general.get("TOTAL ACTIVO", 0), "", "", 
+                "", "", "", "", "", "", "", 
+                "","", "", "", balance_general.get("TOTAL PASIVO", 0), "", "", 
+                "", "", "", "", "", "", balance_general.get("TOTAL PASIVO Y CAPITAL CONTABLE", 0)
+            ]
+        })
+
+        df.index = [
+            "Año", "ACTIVO CIRCULANTE", "Bancos", "Clientes", "Inventarios", "Papelería y Utiles", "TOTAL ACTIVO CIRCULANTE",
+            "ACTIVO NO CIRCULANTE", "Terreno y Edificio", "Maquinaria y Equipo", "Mobiliario y Accesorios", "Equipo de Transporte", "Equipo de Cómputo", "Depreciación Acumulada Activos Fijos", 
+            "Inversiones Permanentes", "OTROS ACTIVOS", "Gastos de Instalacion", "TOTAL ACTIVO NO CIRCULANTE", "TOTAL ACTIVO", "PASIVO A CORTO PLAZO", "Proveedores", 
+            "Acreedores Diversos", "Anticipos a Clientes", "Gastos por Pagar", "Hipotecas por Pagar (Corto Plazo)", "Impuestos por Pagar", "Préstamos Bancarios (Corto Plazo)", "TOTAL PASIVO CIRCULANTE",
+            "PASIVO A LARGO PLAZO", "Hipotecas por Pagar (Largo Plazo)", "Préstamos Bancarios (Largo Plazo)", "TOTAL PASIVO NO CIRCULANTE", "TOTAL PASIVO", "CAPITAL CONTRIBUIDO", "Capital Social", 
+            "CAPITAL GANADO", "Utilidades del Ejercicio Anterior", "Reserva Legal", "Utilidad del Ejercicio", "Total Capital Ganado", "Capital Contable", "TOTAL PASIVO Y CAPITAL CONTABLE"
+        ]
         print("\nBalance General:")
         pd.options.display.float_format = '{:,.2f}'.format
         return f"{df}\n"
@@ -249,7 +301,29 @@ def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
 
 def mostrar_razon_actividad(razon_actividad: dict) -> str:
     try:
-        df=pd.DataFrame(razon_actividad.items(), columns=["Concepto", "Valor"])
+        df=pd.DataFrame({
+            "Valor":[
+                razon_actividad.get("Año"), razon_actividad.get("Costo de Ventas"), razon_actividad.get("Inventario"), "",
+                razon_actividad.get("Ventas"), razon_actividad.get("Cuentas por Cobrar"), "", razon_actividad.get("Costo de Ventas"),
+                razon_actividad.get("Cuentas por Pagar"), "", razon_actividad.get("Ventas"), razon_actividad.get("TOTAL ACTIVO NO CIRCULANTE"),
+                "", razon_actividad.get("Activos Totales"), razon_actividad.get("Ventas"), "",
+                razon_actividad.get("Ventas"), razon_actividad.get("CAPITAL DE TRABAJO"), ""
+            ],
+            "Rotacion":[
+                "", "", "", razon_actividad.get("ROTACION DE INVENTARIOS"),
+                "", "", razon_actividad.get("ROTACION CUENTAS POR COBRAR"), "",
+                "", razon_actividad.get("ROTACION DE CUENTAS POR PAGAR"), "", "",
+                razon_actividad.get("ROTACION DE ACTIVOS FIJOS"), "", "", razon_actividad.get("ROTACION DE ACTIVOS TOTALES"),
+                "", "", razon_actividad.get("ROTACION DE CAPITAL DE TRABAJO")
+            ]
+        })
+        df.index = [
+            "Año", "Costo de Ventas", "Inventario", "ROTACION DE INVENTARIOS",
+            "Ventas", "Cuentas por Cobrar", "ROTACION CUENTAS POR COBRAR", "Costo de Ventas", 
+            "Cuentas por Pagar", "ROTACION DE CUENTAS POR PAGAR", "Ventas", "TOTAL ACTIVO NO CIRCULANTE", 
+            "ROTACION DE ACTIVOS FIJOS", "Activos Totales", "Ventas", "ROTACION DE ACTIVOS TOTALES",
+            "Ventas", "CAPITAL DE TRABAJO", "ROTACION DE CAPITAL DE TRABAJO"
+        ]
         print("\nRazón de Actividad:")
         pd.options.display.float_format = '{:,.2f}'.format
         return f"{df}\n"

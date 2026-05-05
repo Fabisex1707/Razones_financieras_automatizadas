@@ -60,7 +60,7 @@ def main():
                     else:
                         print(balance_general)  # Muestra el mensaje de error si no se pudo calcular el balance general
                 else:
-                    print(estado_resultados)  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
+                    print("Error: No se pudo calcular el balance general, sin antes calcular el estado de resultados.")  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
             else:
                 print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo cargar el catálogo
         elif opcion == 5:
