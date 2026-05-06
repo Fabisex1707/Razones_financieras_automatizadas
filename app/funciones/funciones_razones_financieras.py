@@ -5,6 +5,10 @@ def input_catalogo_cuentas() -> dict | str:
     catalogo_cuentas = {}
     try:
         año = input("Ingrese el año: ")
+        if año.isnumeric():
+            pass
+        else:
+            return "Error: Por favor, ingrese un valor numérico válido.\n"
         acreedores_diversos = float(input("Ingrese el saldo de Acreedores Diversos: "))
         anticipos_clientes = float(input("Ingrese el saldo de Anticipos a Clientes: "))
         bancos = float(input("Ingrese el saldo de Bancos: "))
