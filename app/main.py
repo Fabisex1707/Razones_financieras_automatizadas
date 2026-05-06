@@ -117,7 +117,7 @@ def main():
                                     print(f"El numero de días promedio que tardas en convertir el inventario en efectivo es de {int(periodo_promedio_inventario)} días.")
                                     print(f"Lo que puede indicar una administración del inventario regular o alta moderada, pero eso dependera de la temporada y el sector en el que estes.\n")
 
-                                print("\t--Rotacion de cuentas por cobrar--")
+                                print("\t\t--Rotacion de cuentas por cobrar--")
                                 periodo_promedio_cuentas_por_cobrar=365/rotacion_cuentas_cobrar
                                 if rotacion_cuentas_cobrar < 2:
                                     print("La rotación de cuentas por cobrar es baja.")
