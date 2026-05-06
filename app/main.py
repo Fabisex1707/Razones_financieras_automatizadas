@@ -99,7 +99,7 @@ def main():
                                     print(f"Error al extraer las razones de actividad: {e}")
                                     continue
                                 print(f"\n{'*'*80}")
-                                print("\t---Interpretación de resultados---")
+                                print("\t\t---Interpretación de resultados---")
                                 print(f"{'*'*80}\n")
 
                                 print("\t--Rotacion de inventarios---")
