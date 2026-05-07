@@ -205,7 +205,28 @@ def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, cap
         return f"Error al calcular la razón de actividad: {e}\n"
     return razon_actividad
 
-
+def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
+    razon_rentabilidad = {}
+    try:
+        razon_rentabilidad["Año"] = estado_resultados.get("Año", "")
+        razon_rentabilidad["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
+        razon_rentabilidad["Ventas"] = estado_resultados.get("Ventas", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Utilidad bruta"] = estado_resultados.get("UTILIDAD BRUTA", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD BRUTA"] = (razon_rentabilidad["Utilidad bruta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Utilidad de operacion"] = estado_resultados.get("UTILIDAD DE OPERACIÓN", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD OPERATIVA"] = (razon_rentabilidad["Utilidad de operacion"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Total activos"] = balance_general.get("TOTAL ACTIVO", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE LOS ACTIVOS TOTALES"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Total activos"]) * 100 if razon_rentabilidad["Total activos"] != 0 else 0
+        razon_rentabilidad["Capital contable"] = balance_general.get("Capital Contable", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE EL PATRIMONIO"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital contable"]) * 100 if razon_rentabilidad["Capital contable"] != 0 else 0
+        razon_rentabilidad["Capital social"] =balance_general.get("Capital Social", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE EL CAPITAL COMUN"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital social"]) * 100 if razon_rentabilidad["Capital social"] != 0 else 0
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón de actividad: {e}\n"
+    return razon_rentabilidad  
 
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
@@ -333,7 +354,32 @@ def mostrar_razon_actividad(razon_actividad: dict) -> str:
         return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar la razón de actividad: {e}\n"
-    
+
+def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
+    try:
+        df=pd.DataFrame({    
+            "Valor":[
+                razon_rentabilidad.get("Año"), razon_rentabilidad.get("Utilidad neta"), razon_rentabilidad.get("Ventas"), "",  
+                razon_rentabilidad.get("Utilidad bruta"), "", razon_rentabilidad.get("Utilidad de operacion"), "", 
+                razon_rentabilidad.get("Total activos"), "", razon_rentabilidad.get("Capital contable"), "", razon_rentabilidad.get("Capital social"),""
+            ],    
+            "Porcentaje":[
+                "", "", "", razon_rentabilidad.get("MARGEN DE UTILIDAD"), "", razon_rentabilidad.get("MARGEN DE UTILIDAD BRUTA"), "", 
+                razon_rentabilidad.get("MARGEN DE UTILIDAD OPERATIVA"), "", razon_rentabilidad.get("RENDIMIENTO SOBRE LOS ACTIVOS TOTALES"), "", 
+                razon_rentabilidad.get("RENDIMIENTO SOBRE EL PATRIMONIO"), "", razon_rentabilidad.get("RENDIMIENTO SOBRE EL CAPITAL COMUN")
+            ]
+        }) 
+        df.index = [
+            "Año", "Utilidad neta", "Ventas", "MARGEN DE UTILIDAD", 
+            "Utilidad bruta", "MARGEN DE UTILIDAD BRUTA", "Utilidad de operacion", "MARGEN DE UTILIDAD OPERATIVA", 
+            "Total activos", "RENDIMIENTO SOBRE LOS ACTIVOS TOTALES", "Capital contable", "RENDIMIENTO SOBRE EL PATRIMONIO", 
+            "Capital social", "RENDIMIENTO SOBRE EL CAPITAL COMUN"
+        ]
+        print("\nRazón de Rentabilidad:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        return f"{df}\n"
+    except Exception as e:
+        return f"Error al mostrar la razón de rentabilidad: {e}\n"
 
 # Funciones para la persistencia de datos utilizando pickle
 def cargar_datos_catalogo(nombre_archivo) -> dict | str:

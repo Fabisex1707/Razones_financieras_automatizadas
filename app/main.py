@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -192,7 +192,117 @@ def main():
                     elif opcion == 3:
                         print("Opción para calcular razón de endeudamiento seleccionada. (Funcionalidad en desarrollo)")
                     elif opcion == 4:
-                        print("Opción para calcular razón de rentabilidad seleccionada. (Funcionalidad en desarrollo)")
+                        razon_rentabilidad = calcular_razon_rentabilidad(estado_resultados, balance_general)
+                        if isinstance(razon_rentabilidad, dict):
+                            print(mostrar_razon_rentabilidad(razon_rentabilidad))
+
+                            try:
+                                margen_utilidad = razon_rentabilidad.get("MARGEN DE UTILIDAD",0)
+                                margen_utilidad_bruta = razon_rentabilidad.get("MARGEN DE UTILIDAD BRUTA",0)
+                                margen_utilidad_operativa = razon_rentabilidad.get("MARGEN DE UTILIDAD OPERATIVA",0)
+                                rendimiento_activos = razon_rentabilidad.get("RENDIMIENTO SOBRE LOS ACTIVOS TOTALES",0)
+                                rendimiento_patrimonio = razon_rentabilidad.get("RENDIMIENTO SOBRE EL PATRIMONIO",0)
+                                rendimiento_capital = razon_rentabilidad.get("RENDIMIENTO SOBRE EL CAPITAL COMUN",0)
+                                print(rendimiento_capital)
+                            except Exception as e:
+                                print(f"Error al extraer las razones de rentabilidad: {e}")
+                                continue
+
+                            print(f"\n{'*'*80}")
+                            print("\t\t---Interpretación de resultados---")
+                            print(f"{'*'*80}\n")
+
+
+                            print("\t--Margen de utilidad--")
+                            if margen_utilidad < 5:
+                                print("El margen de utilidad es bajo.")
+                                print(f"La empresa obtiene {margen_utilidad:.2f}% de utilidad neta por cada venta realizada.")
+                                print("Lo que puede indicar altos costos, gastos excesivos o poca eficiencia para generar ganancias.\n")
+                            elif margen_utilidad > 15:
+                                print("El margen de utilidad es alto.")
+                                print(f"La empresa obtiene {margen_utilidad:.2f}% de utilidad neta por cada venta realizada.")
+                                print("Lo que puede indicar una excelente administración de costos y buena rentabilidad.\n")
+                            else:
+                                print("El margen de utilidad es regular.")
+                                print(f"La empresa obtiene {margen_utilidad:.2f}% de utilidad neta por cada venta realizada.")
+                                print("Lo que puede indicar una rentabilidad estable, aunque todavía puede mejorar.\n")
+
+
+                            print("\t--Margen de utilidad bruta--")
+                            if margen_utilidad_bruta < 20:
+                                print("El margen de utilidad bruta es bajo.")
+                                print(f"La empresa conserva {margen_utilidad_bruta:.2f}% después de cubrir el costo de ventas.")
+                                print("Lo que puede indicar costos de producción elevados o poca eficiencia operativa.\n")
+                            elif margen_utilidad_bruta > 50:
+                                print("El margen de utilidad bruta es alto.")
+                                print(f"La empresa conserva {margen_utilidad_bruta:.2f}% después de cubrir el costo de ventas.")
+                                print("Lo que puede indicar un excelente control de costos y alta capacidad para generar ganancias.\n")
+                            else:
+                                print("El margen de utilidad bruta es regular.")
+                                print(f"La empresa conserva {margen_utilidad_bruta:.2f}% después de cubrir el costo de ventas.")
+                                print("Lo que puede indicar un manejo aceptable de costos de producción.\n")
+
+
+                            print("\t--Margen de utilidad operativa--")
+                            if margen_utilidad_operativa < 10:
+                                print("El margen de utilidad operativa es bajo.")
+                                print(f"La empresa genera {margen_utilidad_operativa:.2f}% de utilidad operativa sobre sus ventas.")
+                                print("Lo que puede indicar altos gastos administrativos o de operación.\n")
+                            elif margen_utilidad_operativa > 25:
+                                print("El margen de utilidad operativa es alto.")
+                                print(f"La empresa genera {margen_utilidad_operativa:.2f}% de utilidad operativa sobre sus ventas.")
+                                print("Lo que puede indicar una operación eficiente y bien administrada.\n")
+                            else:
+                                print("El margen de utilidad operativa es regular.")
+                                print(f"La empresa genera {margen_utilidad_operativa:.2f}% de utilidad operativa sobre sus ventas.")
+                                print("Lo que puede indicar una eficiencia operativa aceptable.\n")
+
+
+                            print("\t--Rendimiento sobre los activos totales--")
+                            if rendimiento_activos < 5:
+                                print("El rendimiento sobre activos es bajo.")
+                                print(f"La empresa genera {rendimiento_activos:.2f}% de utilidad por cada peso invertido en activos.")
+                                print("Lo que puede indicar que los activos no están siendo aprovechados eficientemente.\n")
+                            elif rendimiento_activos > 15:
+                                print("El rendimiento sobre activos es alto.")
+                                print(f"La empresa genera {rendimiento_activos:.2f}% de utilidad por cada peso invertido en activos.")
+                                print("Lo que puede indicar un excelente aprovechamiento de los recursos de la empresa.\n")
+                            else:
+                                print("El rendimiento sobre activos es regular.")
+                                print(f"La empresa genera {rendimiento_activos:.2f}% de utilidad por cada peso invertido en activos.")
+                                print("Lo que puede indicar un uso aceptable de los activos.\n")
+
+                            
+                            print("\t--Rendimiento sobre el patrimonio--")
+                            if rendimiento_patrimonio < 10:
+                                print("El rendimiento sobre el patrimonio es bajo.")
+                                print(f"La empresa genera {rendimiento_patrimonio:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar una baja rentabilidad para los propietarios.\n")
+                            elif rendimiento_patrimonio > 20:
+                                print("El rendimiento sobre el patrimonio es alto.")
+                                print(f"La empresa genera {rendimiento_patrimonio:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar una excelente generación de ganancias para los inversionistas.\n")
+                            else:
+                                print("El rendimiento sobre el patrimonio es regular.")
+                                print(f"La empresa genera {rendimiento_patrimonio:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar una rentabilidad estable para los propietarios.\n")
+
+                        
+                            print("\t--Rendimiento sobre el capital común--")
+                            if rendimiento_capital < 10:
+                                print("El rendimiento sobre el capital común es bajo.")
+                                print(f"La empresa obtiene {rendimiento_capital:.2f}% sobre el capital invertido.")
+                                print("Lo que puede indicar poca eficiencia para generar utilidades con el capital social.\n")
+                            elif rendimiento_capital > 20:
+                                print("El rendimiento sobre el capital común es alto.")
+                                print(f"La empresa obtiene {rendimiento_capital:.2f}% sobre el capital invertido.")
+                                print("Lo que puede indicar una excelente capacidad para generar ganancias a partir del capital.\n")
+                            else:
+                                print("El rendimiento sobre el capital común es regular.")
+                                print(f"La empresa obtiene {rendimiento_capital:.2f}% sobre el capital invertido.")
+                                print("Lo que puede indicar un rendimiento aceptable para los inversionistas.\n")
+                        else:
+                            print(razon_rentabilidad)
                     elif opcion == 5:
                         print("Opción para calcular razón de bursatilidad seleccionada. (Funcionalidad en desarrollo)")
                     elif opcion == 6:
