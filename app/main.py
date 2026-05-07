@@ -203,7 +203,6 @@ def main():
                                 rendimiento_activos = razon_rentabilidad.get("RENDIMIENTO SOBRE LOS ACTIVOS TOTALES",0)
                                 rendimiento_patrimonio = razon_rentabilidad.get("RENDIMIENTO SOBRE EL PATRIMONIO",0)
                                 rendimiento_capital = razon_rentabilidad.get("RENDIMIENTO SOBRE EL CAPITAL COMUN",0)
-                                print(rendimiento_capital)
                             except Exception as e:
                                 print(f"Error al extraer las razones de rentabilidad: {e}")
                                 continue
