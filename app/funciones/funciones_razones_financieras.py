@@ -315,6 +315,45 @@ def mostrar_balance_general(balance_general: dict) -> str:
     except Exception as e:
         return f"Error al mostrar el balance general: {e}"
     
+def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
+    bursatilidad = {}
+
+    try:
+        Numero_de_acciones = float(input("Ingrese el numero de acciones: "))
+        valor_en_mercado = float(input("Ingrese el valor de mercado: "))
+    except ValueError:
+        return "Error: Por favor, ingrese un valor numérico válido.\n"
+
+    try:
+        bursatilidad ["VALOR NOMINAL"]= balance_general.get("Año")
+        bursatilidad ["Capital social"] = balance_general.get("Capital Social", 0)
+        bursatilidad ["Numero de acciones"] = Numero_de_acciones
+        bursatilidad ["R_V_N"] = bursatilidad["Capital social"] / bursatilidad["Numero de acciones"]
+        bursatilidad ["Capital contable"] = balance_general.get("TOTAL PASIVO Y CAPITAL CONTABLE", 0)
+        bursatilidad["Numero de acciones"] = Numero_de_acciones
+        bursatilidad["R_V_L"] = bursatilidad ["Capital contable"] / bursatilidad["Numero de acciones"]
+        bursatilidad["Valor en mercado"] = valor_en_mercado
+        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
+        bursatilidad["R_V_ML"] = bursatilidad ["Valor en mercado"] / bursatilidad["Valor en libros"]
+        bursatilidad["Utilidad del ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0) 
+        bursatilidad["Numero de acciones"] = Numero_de_acciones
+        bursatilidad["Valor por accion"] = bursatilidad["Utilidad del ejercicio"] /bursatilidad["Numero de acciones"]
+        bursatilidad["Valor en mercado"] = valor_en_mercado
+        bursatilidad["Utilidad x accion"] = bursatilidad["Valor por accion"] 
+        bursatilidad["R_P_U"] = bursatilidad["Valor en mercado"] / bursatilidad["Utilidad x accion"]
+        bursatilidad["Utilidad por accion"] = bursatilidad["Utilidad x accion"]
+        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
+        bursatilidad["R_R_A"] =bursatilidad["Utilidad por accion"] / bursatilidad["Valor en libros"]
+        bursatilidad["Utilidad x accion"] = bursatilidad["Utilidad por accion"] 
+        bursatilidad["Valor nominal"] = bursatilidad["R_V_N"] 
+        bursatilidad["R_U_V"] = bursatilidad["Utilidad x accion"] * bursatilidad["Valor nominal"]
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón: {e}\n"
+    return bursatilidad
+
+    
 def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
     try:
         df=pd.DataFrame(capital_trabajo.items(), columns=["Concepto", "Valor"])
@@ -380,6 +419,35 @@ def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
         return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar la razón de rentabilidad: {e}\n"
+    
+def mostrar_bursatilidad(bursatilidad: dict) -> str:
+    try:
+        df = pd.DataFrame({
+            "2021": [
+                " ", bursatilidad.get("Capital social", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_N", 0),
+                " ", bursatilidad.get("Capital contable", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_L", 0),
+                " ", bursatilidad.get("Valor en mercado", 0), bursatilidad.get("Valor en libros", 0), bursatilidad.get("R_V_ML", 0),
+                " ", bursatilidad.get("Utilidad del ejercicio", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("Valor por accion", 0),
+                " ", bursatilidad.get("Valor en mercado", 0), bursatilidad.get("Utilidad x accion", 0), bursatilidad.get("R_P_U", 0),
+                " ", bursatilidad.get("Utilidad por accion", 0), bursatilidad.get("Valor en libros", 0), bursatilidad.get("R_R_A", 0),
+                " ", bursatilidad.get("Utilidad x accion", 0), bursatilidad.get("Valor nominal", 0), bursatilidad.get("R_U_V", 0)
+            ]
+        }, index=[
+            "VALOR NOMINAL", "Capital social", "No. acciones", "Valor Nominal",
+            "VALOR EN LIBROS", "Capital contable", "No. acciones", "Valor en Libros",
+            "VALOR MERCADO / VALOR LIBROS", " alor en mercado", "Valor en libros", "Valor M/L",
+            "UTILIDAD POR ACCIÓN", "Utilidad del ejercicio", "No. acciones", "Utilidad por Acción",
+            "RAZÓN PRECIO / U", "Valor mercado", "Utilidad x acción", "Razón",
+            "RENTABILIDAD POR ACCIÓN", "Utilidad x acción", "Valor en libros", "Rentabilidad",
+            "UTILIDAD / VALOR NOMINAL", "Utilidad x acción", "Valor nominal", "Utilidad"
+        ])
+
+        pd.options.display.float_format = '{:,.2f}'.format
+        print("\nBursatilidad:\n")
+        print(df.to_string(justify="right"))
+        return "\nTabla de bursatilidad mostrada correctamente.\n"
+    except Exception as e:
+        return f"Error al mostrar bursatilidad: {e}\n"
 
 # Funciones para la persistencia de datos utilizando pickle
 def cargar_datos_catalogo(nombre_archivo) -> dict | str:

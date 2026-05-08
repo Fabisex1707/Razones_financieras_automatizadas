@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -303,7 +303,80 @@ def main():
                         else:
                             print(razon_rentabilidad)
                     elif opcion == 5:
-                        print("Opción para calcular razón de bursatilidad seleccionada. (Funcionalidad en desarrollo)")
+                        try:
+                            bursatilidad = calcular_bursatilidad(estado_resultados, balance_general)
+                            if isinstance(bursatilidad, dict):
+                                mostrar_bursatilidad(bursatilidad)
+                                valor_nominal = bursatilidad.get("R_V_N")
+                                valor_libros = bursatilidad.get("R_V_L")
+                                razon_ml = bursatilidad.get("R_V_ML")
+                                utilidad_accion = bursatilidad.get("Valor por accion")
+                                razon_pu = bursatilidad.get("R_P_U")
+                                rentabilidad_accion = bursatilidad.get("R_R_A")
+                                utilidad_valor_nominal = bursatilidad.get("R_U_V")
+
+                                print("\n" + "="*65)
+                                print("Interpretación de resultados de bursatilidad")
+                                print("="*65 + "\n")
+
+                                if valor_nominal < 1:
+                                    print(f"Valor nominal: {valor_nominal:.2f} Muy bajo, cada acción representa poco capital social.")
+                                elif 1 <= valor_nominal < 5:
+                                    print(f"Valor nominal: {valor_nominal:.2f} Adecuado, respaldo moderado por acción.")
+                                else:
+                                    print(f"Valor nominal: {valor_nominal:.2f} Alto, cada acción concentra más capital y refleja solidez.")
+
+                                if valor_libros < 1:
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo contable débil por acción.")
+                                elif 1 <= valor_libros < 3:
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo aceptable, cada acción tiene un valor razonable.")
+                                else:
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo fuerte, cada acción refleja buen nivel de capital contable.")
+                                
+                                if razon_ml < 1:
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es menor al respaldo contable, indica debilidad.")
+                                elif 1 <= razon_ml < 2:
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado supera al respaldo contable, muestra fortaleza.")
+                                else:
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es muy superior, refleja posición destacada frente al respaldo.")
+
+                                if utilidad_accion <= 0:
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Pérdida neta por acción, situación crítica.")
+                                elif 0 < utilidad_accion < 1:
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Baja utilidad, cada acción aporta poco beneficio.")
+                                elif 1 <= utilidad_accion < 3:
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Utilidad aceptable, cada acción genera beneficio razonable.")
+                                else:
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Alta utilidad, cada acción aporta beneficio considerable.")
+
+                                if razon_pu < 10:
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación baja, utilidades relativamente fuertes frente al valor.")
+                                elif 10 <= razon_pu <= 20:
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación moderada, equilibrio entre valor y utilidad.")
+                                elif 20 < razon_pu <= 30:
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación alta, utilidades pequeñas frente al valor.")
+                                else:
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación muy elevada, utilidades limitadas frente al valor asignado.")
+
+                                if rentabilidad_accion < 0.1:
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Muy baja, poca capacidad de convertir respaldo en utilidad.")
+                                elif 0.1 <= rentabilidad_accion < 0.5:
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Aceptable, aunque con margen de mejora.")
+                                elif 0.5 <= rentabilidad_accion < 1:
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Buena, convierte eficientemente respaldo contable en utilidad.")
+                                else:
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Excelente, utilidades muy altas respecto al respaldo contable.")
+
+                                if utilidad_valor_nominal < 1:
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Utilidad limitada respecto al valor nominal.")
+                                elif 1 <= utilidad_valor_nominal < 2:
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Buen desempeño, utilidad superior al valor nominal.")
+                                else:
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Excelente desempeño, utilidad muy superior al valor nominal.")
+                            else:
+                                print(bursatilidad)
+                        except Exception as e:
+                            print(f"Error al interpretar bursatilidad: {e}")
                     elif opcion == 6:
                         print("Opción para calcular la razón DuPont seleccionada. (Funcionalidad en desarrollo)") 
                     else:
