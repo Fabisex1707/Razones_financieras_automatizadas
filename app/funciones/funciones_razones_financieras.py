@@ -353,6 +353,24 @@ def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dic
         return f"Error al calcular la razón: {e}\n"
     return bursatilidad
 
+def calcular_analisis_DuPont(estado_resultados: dict, balance_general: dict) -> dict | str:
+    analisis_dupont = {}
+    try:
+        analisis_dupont["Año"] = estado_resultados.get("Año", "")
+        analisis_dupont["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
+        analisis_dupont["Ventas"] = estado_resultados.get("Ventas", 0)
+        analisis_dupont["Total de activos"] = balance_general.get("TOTAL ACTIVO", 0)
+        analisis_dupont["Capital Contable"] = balance_general.get("Capital Contable", 0)
+        analisis_dupont["Margen de utilidad neta"] = (analisis_dupont["Utilidad neta"] / analisis_dupont["Ventas"] if analisis_dupont["Ventas"] != 0 else 0)
+        analisis_dupont["Rotacion de activos totales"] = (analisis_dupont["Ventas"] / analisis_dupont["Total de activos"] if analisis_dupont["Total de activos"] != 0 else 0)
+        analisis_dupont["Rendimiento sobre activos (ROA)"] = (analisis_dupont["Margen de utilidad neta"] * analisis_dupont["Rotacion de activos totales"])
+        analisis_dupont["Razon de endeudamiento sobre patrimonio"] = (analisis_dupont["Total de activos"] / analisis_dupont["Capital Contable"]if analisis_dupont["Capital Contable"] != 0 else 0)
+        analisis_dupont["Rendimiento sobre capital (ROE)"] = (analisis_dupont["Rendimiento sobre activos (ROA)"] * analisis_dupont["Razon de endeudamiento sobre patrimonio"]) * 100
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular el analisis DuPont: {e}\n"
+    return analisis_dupont
     
 def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
     try:
@@ -448,6 +466,36 @@ def mostrar_bursatilidad(bursatilidad: dict) -> str:
         return "\nTabla de bursatilidad mostrada correctamente.\n"
     except Exception as e:
         return f"Error al mostrar bursatilidad: {e}\n"
+
+def mostrar_analisis_dupont(analisis_dupont: dict) -> str:
+    try:
+        df = pd.DataFrame({
+            "Valor":[
+                analisis_dupont.get("Año"), analisis_dupont.get("Utilidad neta"), analisis_dupont.get("Ventas"),"",
+                analisis_dupont.get("Total de activos"),"", analisis_dupont.get("Capital Contable"),"", ""
+            ],
+            "Resultado": ["","","",analisis_dupont.get("Margen de utilidad neta"),
+                "",analisis_dupont.get("Rotacion de activos totales"),"",
+                analisis_dupont.get("Razon de endeudamiento sobre patrimonio"),
+                analisis_dupont.get("Rendimiento sobre capital (ROE)")
+            ]
+        })
+        df.index = [
+            "Año",
+            "Utilidad neta",
+            "Ventas",
+            "Margen de utilidad neta",
+            "Total de activos",
+            "Rotacion de activos totales",
+            "Capital Contable",
+            "Razon de endeudamiento sobre patrimonio",
+            "Rendimiento sobre capital (ROE)"
+        ]
+        print("\nAnalisis DuPont:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        return f"{df}\n"
+    except Exception as e:
+        return f"Error al mostrar el analisis DuPont: {e}\n"
 
 # Funciones para la persistencia de datos utilizando pickle
 def cargar_datos_catalogo(nombre_archivo) -> dict | str:

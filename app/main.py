@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -385,7 +385,77 @@ def main():
                         except Exception as e:
                             print(f"Error al interpretar bursatilidad: {e}")
                     elif opcion == 6:
-                        print("Opción para calcular la razón DuPont seleccionada. (Funcionalidad en desarrollo)") 
+                        analisis_dupont = calcular_analisis_DuPont(estado_resultados, balance_general)
+                        if isinstance(analisis_dupont, dict):
+                            print(mostrar_analisis_dupont(analisis_dupont))
+                            try:
+                                margen_utilidad_neta = analisis_dupont.get("Margen de utilidad neta", 0)
+                                rotacion_activos = analisis_dupont.get("Rotacion de activos totales", 0)
+                                razon_endeudamiento = analisis_dupont.get("Razon de endeudamiento sobre patrimonio", 0)
+                                roe = analisis_dupont.get("Rendimiento sobre capital (ROE)", 0)
+                            except Exception as e:
+                                print(f"Error al extraer las razones DuPont: {e}")
+                                continue
+                            print(f"\n{'*'*80}")
+                            print("\t\t---Interpretación de resultados DuPont---")
+                            print(f"{'*'*80}\n")
+
+                            print("\t--Margen de utilidad neta--")
+                            if margen_utilidad_neta < 5:
+                                print("El margen de utilidad neta es bajo.")
+                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
+                                print("Lo que puede indicar altos costos o poca eficiencia operativa.\n")
+                            elif margen_utilidad_neta > 15:
+                                print("El margen de utilidad neta es alto.")
+                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
+                                print("Lo que puede indicar una excelente administración de costos y gastos.\n")
+                            else:
+                                print("El margen de utilidad neta es regular.")
+                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
+                                print("Lo que puede indicar una rentabilidad estable.\n")
+                            
+                            print("\t--Rotacion de activos totales--")
+                            if rotacion_activos < 1:
+                                print("La rotación de activos totales es baja.")
+                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
+                                print("Lo que puede indicar poco aprovechamiento de los activos.\n")
+                            elif rotacion_activos > 2:
+                                print("La rotación de activos totales es alta.")
+                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
+                                print("Lo que puede indicar un excelente uso de los activos.\n")
+                            else:
+                                print("La rotación de activos totales es regular.")
+                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
+                                print("Lo que puede indicar un uso aceptable de los activos.\n")
+
+                            print("\t--Razon de endeudamiento sobre patrimonio--")
+                            if razon_endeudamiento < 1:
+                                print("La razón de endeudamiento es baja.")
+                                print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
+                                print("Lo que puede indicar bajo riesgo financiero.\n")
+                            elif razon_endeudamiento > 2:
+                                print("La razón de endeudamiento es alta.")
+                                print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
+                                print("Lo que puede indicar un mayor riesgo financiero por exceso de deuda.\n")
+                            else:
+                                 print("La razón de endeudamiento es regular.")
+                            print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
+                            print("Lo que puede indicar un equilibrio financiero aceptable.\n")
+                            print("\t--Rendimiento sobre capital (ROE)--")
+                            if roe < 10:
+                                print("El rendimiento sobre capital es bajo.")
+                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar baja rentabilidad para los inversionistas.\n")
+                            elif roe > 20:
+                                print("El rendimiento sobre capital es alto.")
+                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar una excelente generación de utilidades.\n")
+                            else:
+                                print("El rendimiento sobre capital es regular.")
+                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
+                                print("Lo que puede indicar una rentabilidad estable para los inversionistas.\n")
+                        else:
+                            print(analisis_dupont)
                     else:
                         print("Opción no válida. Por favor, seleccione una opción del menú.")
             else:
