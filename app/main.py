@@ -319,60 +319,67 @@ def main():
                                 print("Interpretación de resultados de bursatilidad")
                                 print("="*65 + "\n")
 
+                                print("\t--Valor nominal--")
                                 if valor_nominal < 1:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Muy bajo, cada acción representa poco capital social.")
+                                    print(f"Valor nominal: {valor_nominal:.2f} Muy bajo, cada acción representa poco capital social.\n")
                                 elif 1 <= valor_nominal < 5:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Adecuado, respaldo moderado por acción.")
+                                    print(f"Valor nominal: {valor_nominal:.2f} Adecuado, respaldo moderado por acción.\n")
                                 else:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Alto, cada acción concentra más capital y refleja solidez.")
+                                    print(f"Valor nominal: {valor_nominal:.2f} Alto, cada acción concentra más capital y refleja solidez.\n")
 
+                                print("\t--Valor en libros--")
                                 if valor_libros < 1:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo contable débil por acción.")
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo contable débil por acción.\n")
                                 elif 1 <= valor_libros < 3:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo aceptable, cada acción tiene un valor razonable.")
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo aceptable, cada acción tiene un valor razonable.\n")
                                 else:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo fuerte, cada acción refleja buen nivel de capital contable.")
+                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo fuerte, cada acción refleja buen nivel de capital contable.\n")
                                 
+                                print("\t--Razon ml--")
                                 if razon_ml < 1:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es menor al respaldo contable, indica debilidad.")
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es menor al respaldo contable, indica debilidad.\n")
                                 elif 1 <= razon_ml < 2:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado supera al respaldo contable, muestra fortaleza.")
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado supera al respaldo contable, muestra fortaleza.\n")
                                 else:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es muy superior, refleja posición destacada frente al respaldo.")
+                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es muy superior, refleja posición destacada frente al respaldo.\n")
 
+                                print("\t--Utilidad por accion--")
                                 if utilidad_accion <= 0:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Pérdida neta por acción, situación crítica.")
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Pérdida neta por acción, situación crítica.\n")
                                 elif 0 < utilidad_accion < 1:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Baja utilidad, cada acción aporta poco beneficio.")
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Baja utilidad, cada acción aporta poco beneficio.\n")
                                 elif 1 <= utilidad_accion < 3:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Utilidad aceptable, cada acción genera beneficio razonable.")
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Utilidad aceptable, cada acción genera beneficio razonable.\n")
                                 else:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Alta utilidad, cada acción aporta beneficio considerable.")
+                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Alta utilidad, cada acción aporta beneficio considerable.\n")
 
+                                print("\t--Razon precio U--")
                                 if razon_pu < 10:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación baja, utilidades relativamente fuertes frente al valor.")
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación baja, utilidades relativamente fuertes frente al valor.\n")
                                 elif 10 <= razon_pu <= 20:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación moderada, equilibrio entre valor y utilidad.")
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación moderada, equilibrio entre valor y utilidad.\n")
                                 elif 20 < razon_pu <= 30:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación alta, utilidades pequeñas frente al valor.")
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación alta, utilidades pequeñas frente al valor.\n")
                                 else:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación muy elevada, utilidades limitadas frente al valor asignado.")
+                                    print(f"Razón P/U: {razon_pu:.2f} Relación muy elevada, utilidades limitadas frente al valor asignado.\n")
 
+                                print("\t--Rentabilidad por accion--")
                                 if rentabilidad_accion < 0.1:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Muy baja, poca capacidad de convertir respaldo en utilidad.")
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Muy baja, poca capacidad de convertir respaldo en utilidad.\n")
                                 elif 0.1 <= rentabilidad_accion < 0.5:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Aceptable, aunque con margen de mejora.")
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Aceptable, aunque con margen de mejora.\n")
                                 elif 0.5 <= rentabilidad_accion < 1:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Buena, convierte eficientemente respaldo contable en utilidad.")
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Buena, convierte eficientemente respaldo contable en utilidad.\n")
                                 else:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Excelente, utilidades muy altas respecto al respaldo contable.")
+                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Excelente, utilidades muy altas respecto al respaldo contable.\n")
 
+                                print("\t--Utilidad valor nominal--")
                                 if utilidad_valor_nominal < 1:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Utilidad limitada respecto al valor nominal.")
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Utilidad limitada respecto al valor nominal.\n")
                                 elif 1 <= utilidad_valor_nominal < 2:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Buen desempeño, utilidad superior al valor nominal.")
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Buen desempeño, utilidad superior al valor nominal.\n")
                                 else:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Excelente desempeño, utilidad muy superior al valor nominal.")
+                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Excelente desempeño, utilidad muy superior al valor nominal.\n")
                             else:
                                 print(bursatilidad)
                         except Exception as e:
