@@ -93,57 +93,75 @@ def main():
                         else:
                             print(capital_trabajo_neto)
                     elif opcion == 2:
-                        def capital_trabajo_neto(activo_circulante, pasivo_corto_plazo):
-                            ctn = activo_circulante - pasivo_corto_plazo
-                            return ctn
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+                        if isinstance(capital_trabajo, dict):
+                            razon_actividad = calcular_razon_actividad(estado_resultados, balance_general, capital_trabajo)
+                            if isinstance(razon_actividad, dict):
+                                print(mostrar_razon_actividad(razon_actividad))
+                                try:
+                                    activo_circulante = razon_actividad.get("TOTAL ACTIVO CIRCULANTE")
+                                    pasivo_corto_plazo = razon_actividad.get("TOTAL PASIVO NO CIRCULANTE")
+                                    inventario = razon_actividad.get("INVENTARIOS")
+                                except Exception as e:
+                                    print(f"Error al extraer las razones de actividad: {e}")
+                                    continue
+                                print(f"\n{'*'*80}")
+                                print("\t\t---Interpretación de resultados---")
+                                print(f"{'*'*80}\n")
 
-                        def razones_financieras(activo_circulante, pasivo_corto_plazo, inventario, efectivo):
-                            razon_circulante = activo_circulante / pasivo_corto_plazo
-                            prueba_acida = (activo_circulante - inventario) / pasivo_corto_plazo
-                            razon_efectivo = efectivo / pasivo_corto_plazo
-                            return razon_circulante, prueba_acida, razon_efectivo
-                        
-                        AC = int(input("Activo Circulante: "))
-                        PCP = int(input("Pasivo Corto Plazo: "))
-                        Inv = int(input("Inventario: "))
-                        E = int(input("Efectivo: "))
-
-                        CTN = capital_trabajo_neto(AC, PCP)
-                        RC, PA, RE = razones_financieras(AC, PCP, Inv, E)
-
-                        print("\n--- RESULTADOS FINANCIEROS ---")
-                        print("Capital de Trabajo Neto:", CTN)
-                        print("Razón Circulante:", round(RC, 2))
-                        print("Prueba Ácida:", round(PA, 2))
-                        print("Razón de Efectivo:", round(RE, 2))
+                                print("\t--Capital de trabajo neto---")
+                                capital_trabajo_neto = activo_circulante-pasivo_corto_plazo
+                                print(f"El total de capital de trabajo neto obtenido es de ${capital_trabajo_neto}")
+                                
+                                print("\t--Razon circulante--")
+                                razon_circulante=activo_circulante/pasivo_corto_plazo
+                                print(f"El total de razon circulante que obtiene de esto es de: {razon_circulante}")
+                                
+                                print("\t--Prueba acida--")
+                                prueba_acida=(activo_circulante - inventario)/pasivo_corto_plazo
+                                print(f"La diferencia obtenida en la prueba acida es de: {prueba_acida}")
+                                
+                                print("\t--Razon de efectivo--")
+                                razon_efectivo=razon_circulante
+                                print(f"El total de razon de efectivo que obtiene de esto es de: {razon_efectivo}")
+                                
                     elif opcion == 3:
-                        def razones_endeudamiento(pasivos, activos, capital_contable):
-                            razon_endeudamiento = pasivos / activos
-                            razon_capital = capital_contable / activos
-                            return razon_endeudamiento, razon_capital
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+                        if isinstance(capital_trabajo, dict):
+                            razon_actividad = calcular_razon_actividad(estado_resultados, balance_general, capital_trabajo)
+                            if isinstance(razon_actividad, dict):
+                                print(mostrar_razon_actividad(razon_actividad))
+                                try:
+                                    activo = razon_actividad.get("TOTAL ACTIVO")
+                                    pasivo = razon_actividad.get("TOTAL PASIVO")
+                                    capital_contable = razon_actividad.get("Capital Contable")
+                                    gastos_financieros = razon_actividad.get("Gastos Finacieros")
+                                    utilidad_antes_impuestos = razon_actividad.get("UTILIDAD ANTES DE IMPUESTOS")
+                                    pasivo_largo_plazo = razon_actividad.get("TOTAL PASIVO CIRCULANTE")
+                                    capital_social = razon_actividad.get("Capital Social")
+                                except Exception as e:
+                                    print(f"Error al extraer las razones de actividad: {e}")
+                                    continue
+                                print(f"\n{'*'*80}")
+                                print("\t\t---Interpretación de resultados---")
+                                print(f"{'*'*80}\n")
 
-
-                        def analisis_financiero(pasivo_largo_plazo, capital_social, utilidad_antes_impuestos, gastos_financieros):
-                            apalancamiento_financiero = pasivo_largo_plazo / capital_social
-                            cobertura_intereses = (utilidad_antes_impuestos + gastos_financieros) / gastos_financieros
-                            return apalancamiento_financiero, cobertura_intereses
-                        
-                        Pasi = int(input("Pasivos: "))
-                        Actv = int(input("Activos: "))
-                        CapCont = int(input("Capital Contable: "))
-                        PasLP = int(input("Pasivo Largo Plazo: "))
-                        CapSoc = int(input("Capital Social: "))
-                        UAI = int(input("Utilidad Antes de Impuestos: "))
-                        GF = int(input("Gastos Financieros: "))
-
-                        REnd, RCap = razones_endeudamiento(Pasi, Actv, CapCont)
-                        AF, CI = analisis_financiero(PasLP, CapSoc, UAI, GF)
-
-                        print("\n--- RESULTADOS FINANCIEROS ---")
-                        print("Razón de Endeudamiento:", round(REnd, 2))
-                        print("Razón de Capital:", round(RCap, 2))
-                        print("Apalancamiento Financiero:", round(AF, 2))
-                        print("Cobertura de Intereses:", round(CI, 2))
+                                print("\t--Razon de endeudamiento---")
+                                razon_endeudamiento = activo/pasivo
+                                print(f"El porcentaje de razon de endeudamiento que obtiene de esto es de {int(razon_endeudamiento)}%")
+                                
+                                print("\t--Razon capital--")
+                                razon_capital=capital_contable/activo
+                                print(f"El porcentaje de razon capital que obtiene de esto de: {int(razon_capital)}%")
+                                
+                                print("\t--Apalancamiento financiero--")
+                                apalancamiento_financiero=pasivo_largo_plazo/capital_social
+                                print(f"El apalancamiento financiero es de: ${apalancamiento_financiero}")
+                                
+                                print("\t--Cobertura de interno--")
+                                cobertura_de_interno = (utilidad_antes_impuestos + gastos_financieros) / gastos_financieros
+                                print(f"La cobertura de interno es de: ${cobertura_de_interno}")
+                                
                     elif opcion == 4:
                         print("Opción para calcular razón de rentabilidad seleccionada. (Funcionalidad en desarrollo)")
                     elif opcion == 5:
