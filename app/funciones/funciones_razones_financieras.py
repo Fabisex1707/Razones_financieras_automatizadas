@@ -204,7 +204,104 @@ def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, cap
     except Exception as e:
         return f"Error al calcular la razón de actividad: {e}\n"
     return razon_actividad
+#############################
+# Funciones para calcular las razones circulantes
 
+def calcular_razon_circulante(estado_resultados: dict, balance_general: dict, capital_trabajo: dict) -> dict | str:
+    razon_circulante = {}
+    try:
+        razon_circulante["TOTAL ACTIVO CIRCULANTE"] = balance_general.get("TOTAL ACTIVO CIRCULANTE", 0)
+        razon_circulante["TOTAL PASIVO CIRCULANTE"] = balance_general.get("TOTAL PASIVO CIRCULANTE", 0)
+        razon_circulante["Inventario"] = balance_general.get("Inventarios", 0)
+        razon_circulante["Bancos"] = balance_general.get("Bancos", 0)
+        razon_circulante["CAPITAL TRABAJO NETO"] = razon_circulante["TOTAL ACTIVO CIRCULANTE"]-razon_circulante["TOTAL PASIVO CIRCULANTE"]
+        razon_circulante["RAZON CIRCULANTE"] = razon_circulante["Inventario"]/razon_circulante["TOTAL PASIVO CIRCULANTE"]
+        razon_circulante["PRUEBA ACIDA"] = (razon_circulante["TOTAL ACTIVO CIRCULANTE"]-razon_circulante["TOTAL ACTIVO CIRCULANTE"])/razon_circulante["TOTAL PASIVO CIRCULANTE"]
+        razon_circulante["RAZON DE EFECTIVO"] = razon_circulante["Bancos"]/razon_circulante["TOTAL PASIVO CIRCULANTE"]
+        
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón circulante: {e}\n"
+    return razon_circulante
+
+def mostrar_razon_circulante(razon_circulante: dict) -> str:
+    try:
+        df=pd.DataFrame({
+            "Valor":[
+                razon_circulante.get("ACTIVO CIRCULANTE"), razon_circulante.get("TOTAL PASIVO NO CIRCULANTE"),
+                razon_circulante.get("Inventario"), razon_circulante.get("Bancos")
+            ],
+            "Pruebas":[
+                "", "", "", "", razon_circulante.get("CAPITAL TRABAJO NETO", 0),
+                "", "", "", "", "",
+                razon_circulante.get("RAZON CIRCULANTE", 0),
+                "", "", "", "", "", "", razon_circulante.get("PRUEBA ACIDA", 0),
+                "", "", "", "", "", "", "", razon_circulante.get("RAZON DE EFECTIVO", 0)
+            ]
+        })
+        df.index = [
+            "ACTIVO CIRCULANTE", "TOTAL PASIVO NO CIRCULANTE", "Inventario", "Bancos",
+            "CAPITAL TRABAJO NETO","RAZON CIRCULANTE","PRUEBA ACIDA","RAZON DE EFECTIVO"
+        ]
+        print("\nRazón Circulante:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        return f"{df}\n"
+    except Exception as e:
+        return f"Error al mostrar la razón circulante: {e}\n"
+
+# Funciones para calcular las razones de rentabilidad
+
+def calcular_razon_apalancamiento(estado_resultados: dict, balance_general: dict, capital_trabajo: dict) -> dict | str:
+    razon_apalancamiento = {}
+    try:
+        razon_apalancamiento["TOTAL ACTIVO"] = balance_general.get("TOTAL ACTIVO",0)
+        razon_apalancamiento["TOTAL PASIVO"] = balance_general.get("TOTAL PASIVO",0)
+        razon_apalancamiento["Capital Contable"]= balance_general.get("Capital Contables", 0)
+        razon_apalancamiento["Gastos Financieros"] = estado_resultados.get("Gastos Financieros",0)
+        razon_apalancamiento["UTILIDAD ANTES DE IMPUESTOS"] = estado_resultados.get("UTILIDAD ANTES DE IMPUESTOS",0)
+        razon_apalancamiento["TOTAL PASIVO NO CIRCULANTE"]= balance_general.get("TOTAL PASIVO NO CIRCULANTE", 0)
+        razon_apalancamiento["Capital Social"] = balance_general.get("Capital Social",0)
+        razon_apalancamiento["RAZON DE ENDEUDAMIENTO"] = razon_apalancamiento["TOTAL ACTIVO"]/razon_apalancamiento["TOTAL PASIVO"]
+        razon_apalancamiento["RAZON CAPITAL"] = razon_apalancamiento["Capital Contable"]/razon_apalancamiento["TOTAL ACTIVO"]
+        razon_apalancamiento["APALANCAMIENTO FINANCIERO"] = razon_apalancamiento["TOTAL PASIVO NO CIRCULANTE"]/razon_apalancamiento["Capital Social"]
+        razon_apalancamiento["COBERTURA DE INTERNO"] = (razon_apalancamiento["UTILIDAD ANTES DE IMPUESTOS"] + razon_apalancamiento["Gastos Financieros"])/razon_apalancamiento["Gastos Financieros"]
+        
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón de apalancamiento: {e}\n"
+    return razon_apalancamiento
+
+def mostrar_razon_apalancamiento(razon_apalancamiento: dict) -> str:
+    try:
+        df=pd.DataFrame({
+            "Valor":[
+                razon_apalancamiento.get("TOTAL ACTIVO"), razon_apalancamiento.get("TOTAL PASIVO"),
+                razon_apalancamiento.get("Capital Contable"), razon_apalancamiento.get("Gastos Financieros"),
+                razon_apalancamiento.get("UTILIDAD ANTES DE IMPUESTOS"), razon_apalancamiento.get("TOTAL PASIVO NO CIRCULANTE"),
+                razon_apalancamiento.get("Capital Social")
+            ],
+            "Razones":[
+                "", "", "", "", razon_apalancamiento.get("RAZON ENDEUDAMIENTO", 0),
+                "", "", "", "", "",
+                razon_apalancamiento.get("RAZON CAPITAL", 0),
+                "", "", "", "", "", "", razon_apalancamiento.get("APALANCAMIENTO FINANCIERO", 0),
+                "", "", "", "", "", "", "", razon_apalancamiento.get("COBERTURA DE INTERNO", 0)
+            ]
+        })
+        df.index = [
+            "TOTAL ACTIVO", "TOTAL PASIVO", "Inventario", "Capital Contable",
+            "UTILIDAD ANTES DE IMPUESTOS", "TOTAL PASIVO NO CIRCULANTE", "Capital Social",
+            "RAZON ENDEUDAMIENTO", "RAZON CAPITAL", "APALANCAMIENTO FINANCIERO", "COBERTURA DE INTERNO"
+        ]
+        print("\nRazón de Apalancamiento:")
+        pd.options.display.float_format = '{:,.2f}'.format
+        return f"{df}\n"
+    except Exception as e:
+        return f"Error al mostrar la razón de apalancamiento: {e}\n"
+
+#######################
 def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
     razon_rentabilidad = {}
     try:
@@ -315,63 +412,6 @@ def mostrar_balance_general(balance_general: dict) -> str:
     except Exception as e:
         return f"Error al mostrar el balance general: {e}"
     
-def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
-    bursatilidad = {}
-
-    try:
-        Numero_de_acciones = float(input("Ingrese el numero de acciones: "))
-        valor_en_mercado = float(input("Ingrese el valor de mercado: "))
-    except ValueError:
-        return "Error: Por favor, ingrese un valor numérico válido.\n"
-
-    try:
-        bursatilidad ["VALOR NOMINAL"]= balance_general.get("Año")
-        bursatilidad ["Capital social"] = balance_general.get("Capital Social", 0)
-        bursatilidad ["Numero de acciones"] = Numero_de_acciones
-        bursatilidad ["R_V_N"] = bursatilidad["Capital social"] / bursatilidad["Numero de acciones"]
-        bursatilidad ["Capital contable"] = balance_general.get("TOTAL PASIVO Y CAPITAL CONTABLE", 0)
-        bursatilidad["Numero de acciones"] = Numero_de_acciones
-        bursatilidad["R_V_L"] = bursatilidad ["Capital contable"] / bursatilidad["Numero de acciones"]
-        bursatilidad["Valor en mercado"] = valor_en_mercado
-        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
-        bursatilidad["R_V_ML"] = bursatilidad ["Valor en mercado"] / bursatilidad["Valor en libros"]
-        bursatilidad["Utilidad del ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0) 
-        bursatilidad["Numero de acciones"] = Numero_de_acciones
-        bursatilidad["Valor por accion"] = bursatilidad["Utilidad del ejercicio"] /bursatilidad["Numero de acciones"]
-        bursatilidad["Valor en mercado"] = valor_en_mercado
-        bursatilidad["Utilidad x accion"] = bursatilidad["Valor por accion"] 
-        bursatilidad["R_P_U"] = bursatilidad["Valor en mercado"] / bursatilidad["Utilidad x accion"]
-        bursatilidad["Utilidad por accion"] = bursatilidad["Utilidad x accion"]
-        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
-        bursatilidad["R_R_A"] =bursatilidad["Utilidad por accion"] / bursatilidad["Valor en libros"]
-        bursatilidad["Utilidad x accion"] = bursatilidad["Utilidad por accion"] 
-        bursatilidad["Valor nominal"] = bursatilidad["R_V_N"] 
-        bursatilidad["R_U_V"] = bursatilidad["Utilidad x accion"] * bursatilidad["Valor nominal"]
-    except KeyError as e:
-        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
-    except Exception as e:
-        return f"Error al calcular la razón: {e}\n"
-    return bursatilidad
-
-def calcular_analisis_DuPont(estado_resultados: dict, balance_general: dict) -> dict | str:
-    analisis_dupont = {}
-    try:
-        analisis_dupont["Año"] = estado_resultados.get("Año", "")
-        analisis_dupont["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
-        analisis_dupont["Ventas"] = estado_resultados.get("Ventas", 0)
-        analisis_dupont["Total de activos"] = balance_general.get("TOTAL ACTIVO", 0)
-        analisis_dupont["Capital Contable"] = balance_general.get("Capital Contable", 0)
-        analisis_dupont["Margen de utilidad neta"] = (analisis_dupont["Utilidad neta"] / analisis_dupont["Ventas"] if analisis_dupont["Ventas"] != 0 else 0)
-        analisis_dupont["Rotacion de activos totales"] = (analisis_dupont["Ventas"] / analisis_dupont["Total de activos"] if analisis_dupont["Total de activos"] != 0 else 0)
-        analisis_dupont["Rendimiento sobre activos (ROA)"] = (analisis_dupont["Margen de utilidad neta"] * analisis_dupont["Rotacion de activos totales"])
-        analisis_dupont["Razon de endeudamiento sobre patrimonio"] = (analisis_dupont["Total de activos"] / analisis_dupont["Capital Contable"]if analisis_dupont["Capital Contable"] != 0 else 0)
-        analisis_dupont["Rendimiento sobre capital (ROE)"] = (analisis_dupont["Rendimiento sobre activos (ROA)"] * analisis_dupont["Razon de endeudamiento sobre patrimonio"]) * 100
-    except KeyError as e:
-        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
-    except Exception as e:
-        return f"Error al calcular el analisis DuPont: {e}\n"
-    return analisis_dupont
-    
 def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
     try:
         df=pd.DataFrame(capital_trabajo.items(), columns=["Concepto", "Valor"])
@@ -437,65 +477,6 @@ def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
         return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar la razón de rentabilidad: {e}\n"
-    
-def mostrar_bursatilidad(bursatilidad: dict) -> str:
-    try:
-        df = pd.DataFrame({
-            "2021": [
-                " ", bursatilidad.get("Capital social", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_N", 0),
-                " ", bursatilidad.get("Capital contable", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_L", 0),
-                " ", bursatilidad.get("Valor en mercado", 0), bursatilidad.get("Valor en libros", 0), bursatilidad.get("R_V_ML", 0),
-                " ", bursatilidad.get("Utilidad del ejercicio", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("Valor por accion", 0),
-                " ", bursatilidad.get("Valor en mercado", 0), bursatilidad.get("Utilidad x accion", 0), bursatilidad.get("R_P_U", 0),
-                " ", bursatilidad.get("Utilidad por accion", 0), bursatilidad.get("Valor en libros", 0), bursatilidad.get("R_R_A", 0),
-                " ", bursatilidad.get("Utilidad x accion", 0), bursatilidad.get("Valor nominal", 0), bursatilidad.get("R_U_V", 0)
-            ]
-        }, index=[
-            "VALOR NOMINAL", "Capital social", "No. acciones", "Valor Nominal",
-            "VALOR EN LIBROS", "Capital contable", "No. acciones", "Valor en Libros",
-            "VALOR MERCADO / VALOR LIBROS", " alor en mercado", "Valor en libros", "Valor M/L",
-            "UTILIDAD POR ACCIÓN", "Utilidad del ejercicio", "No. acciones", "Utilidad por Acción",
-            "RAZÓN PRECIO / U", "Valor mercado", "Utilidad x acción", "Razón",
-            "RENTABILIDAD POR ACCIÓN", "Utilidad x acción", "Valor en libros", "Rentabilidad",
-            "UTILIDAD / VALOR NOMINAL", "Utilidad x acción", "Valor nominal", "Utilidad"
-        ])
-
-        pd.options.display.float_format = '{:,.2f}'.format
-        print("\nBursatilidad:\n")
-        print(df.to_string(justify="right"))
-        return "\nTabla de bursatilidad mostrada correctamente.\n"
-    except Exception as e:
-        return f"Error al mostrar bursatilidad: {e}\n"
-
-def mostrar_analisis_dupont(analisis_dupont: dict) -> str:
-    try:
-        df = pd.DataFrame({
-            "Valor":[
-                analisis_dupont.get("Año"), analisis_dupont.get("Utilidad neta"), analisis_dupont.get("Ventas"),"",
-                analisis_dupont.get("Total de activos"),"", analisis_dupont.get("Capital Contable"),"", ""
-            ],
-            "Resultado": ["","","",analisis_dupont.get("Margen de utilidad neta"),
-                "",analisis_dupont.get("Rotacion de activos totales"),"",
-                analisis_dupont.get("Razon de endeudamiento sobre patrimonio"),
-                analisis_dupont.get("Rendimiento sobre capital (ROE)")
-            ]
-        })
-        df.index = [
-            "Año",
-            "Utilidad neta",
-            "Ventas",
-            "Margen de utilidad neta",
-            "Total de activos",
-            "Rotacion de activos totales",
-            "Capital Contable",
-            "Razon de endeudamiento sobre patrimonio",
-            "Rendimiento sobre capital (ROE)"
-        ]
-        print("\nAnalisis DuPont:")
-        pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
-    except Exception as e:
-        return f"Error al mostrar el analisis DuPont: {e}\n"
 
 # Funciones para la persistencia de datos utilizando pickle
 def cargar_datos_catalogo(nombre_archivo) -> dict | str:
