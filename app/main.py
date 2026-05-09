@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -188,9 +188,105 @@ def main():
                         else:
                             print(capital_trabajo)
                     elif opcion == 2:
-                        print("Opción para calcular razón de liquidez seleccionada. (Funcionalidad en desarrollo)")   
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+                        if isinstance(capital_trabajo, dict):
+                            razon_circulante = calcular_razon_circulante(estado_resultados, balance_general, capital_trabajo)
+                            if isinstance(razon_circulante, dict):
+                                print(mostrar_razon_circulante(razon_circulante))
+                                try:
+                                    capital_trabajo_neto = razon_circulante.get("CAPITAL TRABAJO NETO")
+                                    razon_circulante_int = razon_circulante.get("RAZON CIRCULANTE")
+                                    prueba_acida = razon_circulante.get("PRUEBA ACIDA")
+                                    razon_efectivo = razon_circulante.get("RAZON DE EFECTIVO")
+                                except Exception as e:
+                                    print(f"Error al extraer las razones de actividad: {e}")
+                                    continue
+                                print(f"\n{'*'*80}")
+                                print("\t\t---Interpretación de resultados---")
+                                print(f"{'*'*80}\n")
+
+                                print("\t--Capital de trabajo neto---")
+                                if capital_trabajo_neto < 0:
+                                    print(f"El captital de trabajo neto de ${capital_trabajo_neto} es insuficiente para cubrir por su cuenta las operaciones diarias y termina debiendo.")
+                                elif capital_trabajo_neto > 0:
+                                    print(f"El captital de trabajo neto de ${capital_trabajo_neto} es mas que suficiente para cubrir por su cuenta las operaciones diarias y le sobra.")
+                                else:
+                                    print(f"El captital de trabajo neto de ${capital_trabajo_neto} es apenas lo justo para cubrir por su cuenta las operaciones diarias pero no tiene mas que eso.")
+                                
+                                print("\t--Razon circulante--")
+                                if razon_circulante_int < 1:
+                                    print(f"Los activos superan los pasivos en un {(razon_circulante_int)*100}% y las deudas a corto plazo quedan por demas saldadas")
+                                elif razon_circulante_int > 1:
+                                    print(f"Los activos son superados por los pasivos en un {(razon_circulante_int)*-100}% y termina generando deudas a corto plazo")
+                                else:
+                                    print(f"Los activos y los pasivos son iguales por lo que no tiene deudas a corto plazo")
+
+                                print("\t--Prueba acida--")
+                                if prueba_acida < 1:
+                                    print(f"Depende demasiado de su inventario para cumplir con sus pagos")
+                                elif prueba_acida > 1:
+                                    print(f"Cubre sus deudas con sobremedida y no requiere de  vender su inventario para sus pagos")
+                                else:
+                                    print(f"Se encuentra en una situacion equilibrada pero critica donde no pierde ni gana")
+                                
+                                print("\t--Razon de efectivo--")
+                                if razon_efectivo > 1:
+                                    print(f"Cubre todas de deudas corrientes y sobra por tener un {(razon_efectivo)*100}%")
+                                elif razon_efectivo > 0.5:
+                                    print(f"Apenas cubre sus deudas al tener un {(razon_efectivo)*100}%")
+                                else:
+                                    print(f"No puede cubrir sus deudas ya que solo posee un {(razon_efectivo)*100}% de lo necesario para dichas deudas")
+                                
                     elif opcion == 3:
-                        print("Opción para calcular razón de endeudamiento seleccionada. (Funcionalidad en desarrollo)")
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+                        if isinstance(capital_trabajo, dict):
+                            razon_apalancamiento = calcular_razon_apalancamiento(estado_resultados, balance_general, capital_trabajo)
+                            if isinstance(razon_apalancamiento, dict):
+                                print(mostrar_razon_apalancamiento(razon_apalancamiento))
+                                try:
+                                    razon_endeudamiento = razon_apalancamiento.get("RAZON DE ENDEUDAMIENTO")
+                                    razon_capital = razon_apalancamiento.get("RAZON CAPITAL")
+                                    apalancamiento_financiero = razon_apalancamiento.get("APALANCAMIENTO FINANCIERO")
+                                    cobertura_de_interno = razon_apalancamiento.get("COBERTURA DE INTERNO")
+                                except Exception as e:
+                                    print(f"Error al extraer las razones de actividad: {e}")
+                                    continue
+                                print(f"\n{'*'*80}")
+                                print("\t\t---Interpretación de resultados---")
+                                print(f"{'*'*80}\n")
+
+                                print("\t--Razon de endeudamiento---")
+                                if razon_endeudamiento < 1:
+                                    print(f"Las deudas son pocas por lo que las inversiones son mayores gracias a su tasa del {(razon_endeudamiento)*100}%")
+                                elif razon_endeudamiento > 1:
+                                    print(f"Las deudas son muchas por lo que las inversiones son menores debido a su alta tasa del {(razon_endeudamiento)*100}% en deudas")
+                                else:
+                                    print(f"Las deudas son medias por su tasa del 100% de deudas")
+                                
+                                print("\t--Razon capital--")
+                                if razon_capital < 1:
+                                    print(f"Tiene una baja deuda de capital y deudas a largo plazo")
+                                elif razon_capital > 1:
+                                    print(f"Tiene una alta deuda de capital y deudas a largo plazo")
+                                else:
+                                    print(f"Tiene una moderada deuda de capital y deudas a largo plazo")
+                                
+                                print("\t--Apalancamiento financiero--")
+                                if apalancamiento_financiero < 1:
+                                    print(f"Sus deudas entre a corto y largo plazo son mayores a favor de las a largo plazo")
+                                elif apalancamiento_financiero > 1:
+                                    print(f"Sus deudas entre a corto y largo plazo son mayores a favor de las a corto plazo")
+                                else:
+                                    print(f"Sus deudas entre a corto y largo plazo son iguales")
+                                
+                                print("\t--Cobertura de interno--")
+                                if cobertura_de_interno > 2.0:
+                                    print(f"Genera suficiente flujo para cubrir cómodamente sus obligaciones de intereses")
+                                elif cobertura_de_interno > 1.0:
+                                    print(f"Indica que la utilidad apenas cubre los intereses")
+                                else:
+                                    print(f"No genera suficiente beneficio para pagar sus gastos financieros")
+                                
                     elif opcion == 4:
                         razon_rentabilidad = calcular_razon_rentabilidad(estado_resultados, balance_general)
                         if isinstance(razon_rentabilidad, dict):
@@ -303,159 +399,9 @@ def main():
                         else:
                             print(razon_rentabilidad)
                     elif opcion == 5:
-                        try:
-                            bursatilidad = calcular_bursatilidad(estado_resultados, balance_general)
-                            if isinstance(bursatilidad, dict):
-                                mostrar_bursatilidad(bursatilidad)
-                                valor_nominal = bursatilidad.get("R_V_N")
-                                valor_libros = bursatilidad.get("R_V_L")
-                                razon_ml = bursatilidad.get("R_V_ML")
-                                utilidad_accion = bursatilidad.get("Valor por accion")
-                                razon_pu = bursatilidad.get("R_P_U")
-                                rentabilidad_accion = bursatilidad.get("R_R_A")
-                                utilidad_valor_nominal = bursatilidad.get("R_U_V")
-
-                                print("\n" + "="*65)
-                                print("Interpretación de resultados de bursatilidad")
-                                print("="*65 + "\n")
-
-                                print("\t--Valor nominal--")
-                                if valor_nominal < 1:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Muy bajo, cada acción representa poco capital social.\n")
-                                elif 1 <= valor_nominal < 5:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Adecuado, respaldo moderado por acción.\n")
-                                else:
-                                    print(f"Valor nominal: {valor_nominal:.2f} Alto, cada acción concentra más capital y refleja solidez.\n")
-
-                                print("\t--Valor en libros--")
-                                if valor_libros < 1:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo contable débil por acción.\n")
-                                elif 1 <= valor_libros < 3:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo aceptable, cada acción tiene un valor razonable.\n")
-                                else:
-                                    print(f"Valor en libros: {valor_libros:.2f} Respaldo fuerte, cada acción refleja buen nivel de capital contable.\n")
-                                
-                                print("\t--Razon ml--")
-                                if razon_ml < 1:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es menor al respaldo contable, indica debilidad.\n")
-                                elif 1 <= razon_ml < 2:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado supera al respaldo contable, muestra fortaleza.\n")
-                                else:
-                                    print(f"Razón V/L: {razon_ml:.2f} El valor calculado es muy superior, refleja posición destacada frente al respaldo.\n")
-
-                                print("\t--Utilidad por accion--")
-                                if utilidad_accion <= 0:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Pérdida neta por acción, situación crítica.\n")
-                                elif 0 < utilidad_accion < 1:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Baja utilidad, cada acción aporta poco beneficio.\n")
-                                elif 1 <= utilidad_accion < 3:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Utilidad aceptable, cada acción genera beneficio razonable.\n")
-                                else:
-                                    print(f"Utilidad por acción: {utilidad_accion:.2f} Alta utilidad, cada acción aporta beneficio considerable.\n")
-
-                                print("\t--Razon precio U--")
-                                if razon_pu < 10:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación baja, utilidades relativamente fuertes frente al valor.\n")
-                                elif 10 <= razon_pu <= 20:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación moderada, equilibrio entre valor y utilidad.\n")
-                                elif 20 < razon_pu <= 30:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación alta, utilidades pequeñas frente al valor.\n")
-                                else:
-                                    print(f"Razón P/U: {razon_pu:.2f} Relación muy elevada, utilidades limitadas frente al valor asignado.\n")
-
-                                print("\t--Rentabilidad por accion--")
-                                if rentabilidad_accion < 0.1:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Muy baja, poca capacidad de convertir respaldo en utilidad.\n")
-                                elif 0.1 <= rentabilidad_accion < 0.5:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Aceptable, aunque con margen de mejora.\n")
-                                elif 0.5 <= rentabilidad_accion < 1:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Buena, convierte eficientemente respaldo contable en utilidad.\n")
-                                else:
-                                    print(f"Rentabilidad por acción: {rentabilidad_accion:.2f} Excelente, utilidades muy altas respecto al respaldo contable.\n")
-
-                                print("\t--Utilidad valor nominal--")
-                                if utilidad_valor_nominal < 1:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Utilidad limitada respecto al valor nominal.\n")
-                                elif 1 <= utilidad_valor_nominal < 2:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Buen desempeño, utilidad superior al valor nominal.\n")
-                                else:
-                                    print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Excelente desempeño, utilidad muy superior al valor nominal.\n")
-                            else:
-                                print(bursatilidad)
-                        except Exception as e:
-                            print(f"Error al interpretar bursatilidad: {e}")
+                        print("Opción para calcular razón de bursatilidad seleccionada. (Funcionalidad en desarrollo)")
                     elif opcion == 6:
-                        analisis_dupont = calcular_analisis_DuPont(estado_resultados, balance_general)
-                        if isinstance(analisis_dupont, dict):
-                            print(mostrar_analisis_dupont(analisis_dupont))
-                            try:
-                                margen_utilidad_neta = analisis_dupont.get("Margen de utilidad neta", 0)
-                                rotacion_activos = analisis_dupont.get("Rotacion de activos totales", 0)
-                                razon_endeudamiento = analisis_dupont.get("Razon de endeudamiento sobre patrimonio", 0)
-                                roe = analisis_dupont.get("Rendimiento sobre capital (ROE)", 0)
-                            except Exception as e:
-                                print(f"Error al extraer las razones DuPont: {e}")
-                                continue
-                            print(f"\n{'*'*80}")
-                            print("\t\t---Interpretación de resultados DuPont---")
-                            print(f"{'*'*80}\n")
-
-                            print("\t--Margen de utilidad neta--")
-                            if margen_utilidad_neta < 5:
-                                print("El margen de utilidad neta es bajo.")
-                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
-                                print("Lo que puede indicar altos costos o poca eficiencia operativa.\n")
-                            elif margen_utilidad_neta > 15:
-                                print("El margen de utilidad neta es alto.")
-                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
-                                print("Lo que puede indicar una excelente administración de costos y gastos.\n")
-                            else:
-                                print("El margen de utilidad neta es regular.")
-                                print(f"La empresa obtiene {margen_utilidad_neta:.2f}% de utilidad por sus ventas.")
-                                print("Lo que puede indicar una rentabilidad estable.\n")
-                            
-                            print("\t--Rotacion de activos totales--")
-                            if rotacion_activos < 1:
-                                print("La rotación de activos totales es baja.")
-                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
-                                print("Lo que puede indicar poco aprovechamiento de los activos.\n")
-                            elif rotacion_activos > 2:
-                                print("La rotación de activos totales es alta.")
-                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
-                                print("Lo que puede indicar un excelente uso de los activos.\n")
-                            else:
-                                print("La rotación de activos totales es regular.")
-                                print(f"La empresa genera ${rotacion_activos:.2f} pesos por cada $1.00 invertido en activos.")
-                                print("Lo que puede indicar un uso aceptable de los activos.\n")
-
-                            print("\t--Razon de endeudamiento sobre patrimonio--")
-                            if razon_endeudamiento < 1:
-                                print("La razón de endeudamiento es baja.")
-                                print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
-                                print("Lo que puede indicar bajo riesgo financiero.\n")
-                            elif razon_endeudamiento > 2:
-                                print("La razón de endeudamiento es alta.")
-                                print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
-                                print("Lo que puede indicar un mayor riesgo financiero por exceso de deuda.\n")
-                            else:
-                                 print("La razón de endeudamiento es regular.")
-                            print(f"La empresa utiliza {razon_endeudamiento:.2f} veces deuda respecto a su patrimonio.")
-                            print("Lo que puede indicar un equilibrio financiero aceptable.\n")
-                            print("\t--Rendimiento sobre capital (ROE)--")
-                            if roe < 10:
-                                print("El rendimiento sobre capital es bajo.")
-                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
-                                print("Lo que puede indicar baja rentabilidad para los inversionistas.\n")
-                            elif roe > 20:
-                                print("El rendimiento sobre capital es alto.")
-                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
-                                print("Lo que puede indicar una excelente generación de utilidades.\n")
-                            else:
-                                print("El rendimiento sobre capital es regular.")
-                                print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
-                                print("Lo que puede indicar una rentabilidad estable para los inversionistas.\n")
-                        else:
-                            print(analisis_dupont)
+                        print("Opción para calcular la razón DuPont seleccionada. (Funcionalidad en desarrollo)") 
                     else:
                         print("Opción no válida. Por favor, seleccione una opción del menú.")
             else:
