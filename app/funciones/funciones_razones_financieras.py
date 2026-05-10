@@ -205,29 +205,6 @@ def calcular_razon_actividad(estado_resultados: dict, balance_general: dict, cap
         return f"Error al calcular la razón de actividad: {e}\n"
     return razon_actividad
 
-def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
-    razon_rentabilidad = {}
-    try:
-        razon_rentabilidad["Año"] = estado_resultados.get("Año", "")
-        razon_rentabilidad["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
-        razon_rentabilidad["Ventas"] = estado_resultados.get("Ventas", 0)
-        razon_rentabilidad["MARGEN DE UTILIDAD"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
-        razon_rentabilidad["Utilidad bruta"] = estado_resultados.get("UTILIDAD BRUTA", 0)
-        razon_rentabilidad["MARGEN DE UTILIDAD BRUTA"] = (razon_rentabilidad["Utilidad bruta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
-        razon_rentabilidad["Utilidad de operacion"] = estado_resultados.get("UTILIDAD DE OPERACION", 0)
-        razon_rentabilidad["MARGEN DE UTILIDAD OPERATIVA"] = (razon_rentabilidad["Utilidad de operacion"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
-        razon_rentabilidad["Total activos"] = balance_general.get("TOTAL ACTIVO", 0)
-        razon_rentabilidad["RENDIMIENTO SOBRE LOS ACTIVOS TOTALES"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Total activos"]) * 100 if razon_rentabilidad["Total activos"] != 0 else 0
-        razon_rentabilidad["Capital contable"] = balance_general.get("Capital Contable", 0)
-        razon_rentabilidad["RENDIMIENTO SOBRE EL PATRIMONIO"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital contable"]) * 100 if razon_rentabilidad["Capital contable"] != 0 else 0
-        razon_rentabilidad["Capital social"] =balance_general.get("Capital Social", 0)
-        razon_rentabilidad["RENDIMIENTO SOBRE EL CAPITAL COMUN"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital social"]) * 100 if razon_rentabilidad["Capital social"] != 0 else 0
-    except KeyError as e:
-        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
-    except Exception as e:
-        return f"Error al calcular la razón de actividad: {e}\n"
-    return razon_rentabilidad  
-
 def calcular_razon_liquidez(balance_general: dict, catalogo_cuentas: dict) -> dict | str:
     razon_liquidez = {}
 
@@ -267,6 +244,105 @@ def calcular_razon_liquidez(balance_general: dict, catalogo_cuentas: dict) -> di
     
     return razon_liquidez
 
+def calcular_razon_endeudamiento(
+    balance_general: dict,
+    estado_resultados: dict,
+    catalogo_cuentas: dict
+) -> dict | str:
+
+    razon_endeudamiento = {}
+
+    try:
+
+        razon_endeudamiento["Año"] = balance_general.get("Año", "")
+
+        razon_endeudamiento["Pasivos"] = balance_general.get("TOTAL PASIVO", 0)
+
+        razon_endeudamiento["Activos"] = balance_general.get("TOTAL ACTIVO", 0)
+
+        razon_endeudamiento["RAZON DE ENDEUDAMIENTO"] = (
+            (razon_endeudamiento["Pasivos"] /
+            razon_endeudamiento["Activos"]) * 100
+            if razon_endeudamiento["Activos"] != 0 else 0
+        )
+
+        razon_endeudamiento["Capital Contable"] = balance_general.get("Capital Contable", 0)
+
+        razon_endeudamiento["RAZON DE CAPITAL"] = (
+            (razon_endeudamiento["Capital Contable"] /
+            razon_endeudamiento["Activos"]) * 100
+            if razon_endeudamiento["Activos"] != 0 else 0
+        )
+
+        razon_endeudamiento["Pasivo LP"] = balance_general.get(
+            "TOTAL PASIVO NO CIRCULANTE",
+            0
+        )
+
+        razon_endeudamiento["Capital Social"] = catalogo_cuentas.get(
+            "Capital Social",
+            0
+        )
+
+        razon_endeudamiento["APALANCAMIENTO FINANCIERO"] = (
+            razon_endeudamiento["Pasivo LP"] /
+            razon_endeudamiento["Capital Social"]
+            if razon_endeudamiento["Capital Social"] != 0 else 0
+        )
+
+        razon_endeudamiento["UAI"] = estado_resultados.get(
+            "UTILIDAD ANTES DE IMPUESTOS",
+            0
+        )
+
+        razon_endeudamiento["GF"] = catalogo_cuentas.get(
+            "Gastos Financieros",
+            0
+        )
+
+        razon_endeudamiento["UAI+GF"] = (
+            razon_endeudamiento["UAI"] +
+            razon_endeudamiento["GF"]
+        )
+
+        razon_endeudamiento["COBERTURA DE INTERESES"] = (
+            razon_endeudamiento["UAI+GF"] /
+            razon_endeudamiento["GF"]
+            if razon_endeudamiento["GF"] != 0 else 0
+        )
+
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en los estados financieros.\n"
+
+    except Exception as e:
+        return f"Error al calcular la razón de endeudamiento: {e}\n"
+
+    return razon_endeudamiento
+
+def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
+    razon_rentabilidad = {}
+    try:
+        razon_rentabilidad["Año"] = estado_resultados.get("Año", "")
+        razon_rentabilidad["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
+        razon_rentabilidad["Ventas"] = estado_resultados.get("Ventas", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Utilidad bruta"] = estado_resultados.get("UTILIDAD BRUTA", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD BRUTA"] = (razon_rentabilidad["Utilidad bruta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Utilidad de operacion"] = estado_resultados.get("UTILIDAD DE OPERACION", 0)
+        razon_rentabilidad["MARGEN DE UTILIDAD OPERATIVA"] = (razon_rentabilidad["Utilidad de operacion"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
+        razon_rentabilidad["Total activos"] = balance_general.get("TOTAL ACTIVO", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE LOS ACTIVOS TOTALES"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Total activos"]) * 100 if razon_rentabilidad["Total activos"] != 0 else 0
+        razon_rentabilidad["Capital contable"] = balance_general.get("Capital Contable", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE EL PATRIMONIO"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital contable"]) * 100 if razon_rentabilidad["Capital contable"] != 0 else 0
+        razon_rentabilidad["Capital social"] =balance_general.get("Capital Social", 0)
+        razon_rentabilidad["RENDIMIENTO SOBRE EL CAPITAL COMUN"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Capital social"]) * 100 if razon_rentabilidad["Capital social"] != 0 else 0
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón de actividad: {e}\n"
+    return razon_rentabilidad  
+
+
 def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
     bursatilidad = {}
 
@@ -277,7 +353,7 @@ def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dic
         return "Error: Por favor, ingrese un valor numérico válido.\n"
 
     try:
-        bursatilidad ["VALOR NOMINAL"]= balance_general.get("Año")
+        bursatilidad ["Año"]= balance_general.get("Año")
         bursatilidad ["Capital social"] = balance_general.get("Capital Social", 0)
         bursatilidad ["Numero de acciones"] = Numero_de_acciones
         bursatilidad ["R_V_N"] = bursatilidad["Capital social"] / bursatilidad["Numero de acciones"]
@@ -535,6 +611,91 @@ def mostrar_razon_liquidez(razon_liquidez: dict, capital_trabajo: dict) -> str:
         return "\nRazones de liquidez mostradas correctamente.\n"
     except Exception as e:
         return f"Error al mostrar la razón de liquidez: {e}\n"
+    
+def mostrar_razon_endeudamiento(
+    razon_endeudamiento: dict
+) -> str:
+
+    try:
+
+        df = pd.DataFrame({
+
+            "Valor":[
+
+                razon_endeudamiento.get("Año", ""),
+
+                f"{razon_endeudamiento.get('Pasivos', 0):,.2f}",
+                f"{razon_endeudamiento.get('Activos', 0):,.2f}",
+                "",
+
+                f"{razon_endeudamiento.get('Capital Contable', 0):,.2f}",
+                f"{razon_endeudamiento.get('Activos', 0):,.2f}",
+                "",
+
+                f"{razon_endeudamiento.get('Pasivo LP', 0):,.2f}",
+                f"{razon_endeudamiento.get('Capital Social', 0):,.2f}",
+                "",
+
+                f"{razon_endeudamiento.get('UAI+GF', 0):,.2f}",
+                f"{razon_endeudamiento.get('GF', 0):,.2f}",
+                ""
+
+            ],
+
+            "Porcentaje":[
+
+                "",
+
+                "",
+                "",
+                f"{razon_endeudamiento.get('RAZON DE ENDEUDAMIENTO', 0):.2f}%",
+
+                "",
+                "",
+                f"{razon_endeudamiento.get('RAZON DE CAPITAL', 0):.2f}%",
+
+                "",
+                "",
+                f"{razon_endeudamiento.get('APALANCAMIENTO FINANCIERO', 0):.2f}",
+
+                "",
+                "",
+                f"{razon_endeudamiento.get('COBERTURA DE INTERESES', 0):.2f}"
+
+            ]
+
+        })
+
+        df.index = [
+
+            "Año",
+
+            "Pasivos",
+            "Activos",
+            "Razon de endeudamiento %",
+
+            "Capital contable",
+            "Activos",
+            "Razon de capital %",
+
+            "Pasivo LP",
+            "Capital social",
+            "Apalancamiento financiero",
+
+            "UAI+GF",
+            "GF",
+            "Cobertura de intereses"
+
+        ]
+
+        print("\nRazón de Endeudamiento:")
+
+        pd.options.display.float_format = '{:,.2f}'.format
+
+        return f"{df}\n"
+
+    except Exception as e:
+        return f"Error al mostrar la razón de endeudamiento: {e}\n"
 
 def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
     try:
@@ -565,8 +726,8 @@ def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
 def mostrar_bursatilidad(bursatilidad: dict) -> str:
     try:
         df = pd.DataFrame({
-            "2021": [
-                " ", bursatilidad.get("Capital social", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_N", 0),
+            "Valor": [
+                bursatilidad.get("Año",0), bursatilidad.get("Capital social", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_N", 0),
                 " ", bursatilidad.get("Capital contable", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_L", 0),
                 " ", bursatilidad.get("Valor en mercado", 0), bursatilidad.get("Valor en libros", 0), bursatilidad.get("R_V_ML", 0),
                 " ", bursatilidad.get("Utilidad del ejercicio", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("Valor por accion", 0),
@@ -575,7 +736,7 @@ def mostrar_bursatilidad(bursatilidad: dict) -> str:
                 " ", bursatilidad.get("Utilidad x accion", 0), bursatilidad.get("Valor nominal", 0), bursatilidad.get("R_U_V", 0)
             ]
         }, index=[
-            "VALOR NOMINAL", "Capital social", "No. acciones", "Valor Nominal",
+            "Año", "Capital social", "No. acciones", "Valor Nominal",
             "VALOR EN LIBROS", "Capital contable", "No. acciones", "Valor en Libros",
             "VALOR MERCADO / VALOR LIBROS", " alor en mercado", "Valor en libros", "Valor M/L",
             "UTILIDAD POR ACCIÓN", "Utilidad del ejercicio", "No. acciones", "Utilidad por Acción",

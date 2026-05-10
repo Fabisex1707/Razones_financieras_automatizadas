@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_liquidez, mostrar_razon_liquidez,calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_liquidez, mostrar_razon_liquidez,calcular_razon_endeudamiento, mostrar_razon_endeudamiento, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -307,7 +307,132 @@ def main():
                         else:
                             print(capital_trabajo)
                     elif opcion == 3:
-                        print("Opción para calcular razón de endeudamiento seleccionada. (Funcionalidad en desarrollo)")
+                        razon_endeudamiento = calcular_razon_endeudamiento(
+                            balance_general,
+                            estado_resultados,
+                            catalogo_cuentas
+                        )
+
+                        if isinstance(razon_endeudamiento, dict):
+
+                            print(
+                                mostrar_razon_endeudamiento(
+                                    razon_endeudamiento
+                                )
+                            )
+
+                            try:
+
+                                razon_deuda = razon_endeudamiento.get(
+                                    "RAZON DE ENDEUDAMIENTO",
+                                    0
+                                )
+
+                                razon_capital = razon_endeudamiento.get(
+                                    "RAZON DE CAPITAL",
+                                    0
+                                )
+
+                                apalancamiento = razon_endeudamiento.get(
+                                    "APALANCAMIENTO FINANCIERO",
+                                    0
+                                )
+
+                                cobertura_intereses = razon_endeudamiento.get(
+                                    "COBERTURA DE INTERESES",
+                                    0
+                                )
+
+                            except Exception as e:
+                                print(f"Error al extraer las razones de endeudamiento: {e}")
+                                continue
+
+                            print(f"\n{'*'*80}")
+                            print("\t\t---Interpretación de resultados---")
+                            print(f"{'*'*80}\n")
+
+                            print("\t--Razon de endeudamiento--")
+
+                            if razon_deuda < 40:
+
+                                print("La razón de endeudamiento es baja.")
+                                print(f"La empresa financia {razon_deuda:.2f}% de sus activos mediante deuda.")
+                                print("Lo que puede indicar un bajo riesgo financiero y mayor estabilidad.\n")
+
+                            elif razon_deuda > 60:
+
+                                print("La razón de endeudamiento es alta.")
+                                print(f"La empresa financia {razon_deuda:.2f}% de sus activos mediante deuda.")
+                                print("Lo que puede indicar una fuerte dependencia de financiamiento externo.\n")
+
+                            else:
+
+                                print("La razón de endeudamiento es regular.")
+                                print(f"La empresa financia {razon_deuda:.2f}% de sus activos mediante deuda.")
+                                print("Lo que puede indicar una estructura financiera equilibrada.\n")
+
+                            print("\t--Razon de capital--")
+
+                            if razon_capital < 40:
+
+                                print("La razón de capital es baja.")
+                                print(f"El capital contable representa {razon_capital:.2f}% de los activos.")
+                                print("Lo que puede indicar poca independencia financiera.\n")
+
+                            elif razon_capital > 60:
+
+                                print("La razón de capital es alta.")
+                                print(f"El capital contable representa {razon_capital:.2f}% de los activos.")
+                                print("Lo que puede indicar una sólida estructura patrimonial.\n")
+
+                            else:
+
+                                print("La razón de capital es regular.")
+                                print(f"El capital contable representa {razon_capital:.2f}% de los activos.")
+                                print("Lo que puede indicar un equilibrio adecuado entre deuda y capital.\n")
+
+                            print("\t--Apalancamiento financiero--")
+
+                            if apalancamiento < 1:
+
+                                print("El apalancamiento financiero es bajo.")
+                                print(f"La empresa utiliza {apalancamiento:.2f} pesos de deuda LP por cada peso de capital social.")
+                                print("Lo que puede indicar un bajo riesgo financiero.\n")
+
+                            elif apalancamiento > 2:
+
+                                print("El apalancamiento financiero es alto.")
+                                print(f"La empresa utiliza {apalancamiento:.2f} pesos de deuda LP por cada peso de capital social.")
+                                print("Lo que puede indicar un mayor riesgo financiero por exceso de deuda.\n")
+
+                            else:
+
+                                print("El apalancamiento financiero es regular.")
+                                print(f"La empresa utiliza {apalancamiento:.2f} pesos de deuda LP por cada peso de capital social.")
+                                print("Lo que puede indicar un nivel aceptable de financiamiento externo.\n")
+
+                            print("\t--Cobertura de intereses--")
+
+                            if cobertura_intereses < 1.5:
+
+                                print("La cobertura de intereses es baja.")
+                                print(f"La empresa puede cubrir {cobertura_intereses:.2f} veces sus gastos financieros.")
+                                print("Lo que puede indicar dificultades para pagar intereses de sus deudas.\n")
+
+                            elif cobertura_intereses > 5:
+
+                                print("La cobertura de intereses es alta.")
+                                print(f"La empresa puede cubrir {cobertura_intereses:.2f} veces sus gastos financieros.")
+                                print("Lo que puede indicar una excelente capacidad para cumplir obligaciones financieras.\n")
+
+                            else:
+
+                                print("La cobertura de intereses es regular.")
+                                print(f"La empresa puede cubrir {cobertura_intereses:.2f} veces sus gastos financieros.")
+                                print("Lo que puede indicar una capacidad aceptable para cubrir intereses.\n")
+
+                        else:
+                            print(razon_endeudamiento)
                     elif opcion == 4:
                         razon_rentabilidad = calcular_razon_rentabilidad(estado_resultados, balance_general)
                         if isinstance(razon_rentabilidad, dict):
