@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_liquidez, mostrar_razon_liquidez,calcular_razon_endeudamiento, mostrar_razon_endeudamiento, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_liquidez, mostrar_razon_liquidez,calcular_razon_endeudamiento, mostrar_razon_endeudamiento, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont, exportar_excel
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -37,7 +37,17 @@ def main():
         elif opcion == 2:
             catalogo_cuentas = cargar_datos_catalogo("catalogo_cuentas.pkl")
             if isinstance(catalogo_cuentas, dict):
-                print(mostrar_catalogo_cuentas(catalogo_cuentas))
+                df_catalogo_cuentas=mostrar_catalogo_cuentas(catalogo_cuentas)
+                exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+
+                if exportar == "s":
+                    resultado_exportacion = exportar_excel({
+                        "Catalogo_cuentas": df_catalogo_cuentas["Catalogo_de_cuentas"]
+                    })
+
+                    print(resultado_exportacion)
+                else:
+                    pass
             else:
                 print(catalogo_cuentas)  # Muestra el mensaje de error si no se pudo cargar el catálogo
         elif opcion == 3:
@@ -45,7 +55,16 @@ def main():
             if isinstance(catalogo_cuentas, dict):
                 estado_resultados = calcular_estado_resultados(catalogo_cuentas)
                 if isinstance(estado_resultados, dict):
-                    print(mostrar_estado_resultados(estado_resultados))
+                    df_estado_resultados=mostrar_estado_resultados(estado_resultados)
+                    exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                    if exportar == "s":
+                        resultado_exportacion = exportar_excel({
+                            "Estado_resultados": df_estado_resultados["Estado_de_resultados"]
+                        })
+
+                        print(resultado_exportacion)
+                    else:
+                        pass
                 else:
                     print(estado_resultados)  # Muestra el mensaje de error si no se pudo calcular el estado de resultados
             else:
@@ -56,7 +75,16 @@ def main():
                 if isinstance(estado_resultados, dict):
                     balance_general = calcular_balance_general(catalogo_cuentas, estado_resultados)
                     if isinstance(balance_general, dict):
-                        print(mostrar_balance_general(balance_general))
+                        df_balance_general=mostrar_balance_general(balance_general)
+                        exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                        if exportar == "s":
+                            resultado_exportacion = exportar_excel({
+                                "Balance_general": df_balance_general["Balance_general"]
+                            })
+
+                            print(resultado_exportacion)
+                        else:
+                            pass
                     else:
                         print(balance_general)  # Muestra el mensaje de error si no se pudo calcular el balance general
                 else:
@@ -87,7 +115,7 @@ def main():
                         if isinstance(capital_trabajo, dict):
                             razon_actividad = calcular_razon_actividad(estado_resultados, balance_general, capital_trabajo)
                             if isinstance(razon_actividad, dict):
-                                print(mostrar_razon_actividad(razon_actividad))
+                                df_razon_actividad=mostrar_razon_actividad(razon_actividad)
                                 try:
                                     rotacion_inventarios = razon_actividad.get("ROTACION DE INVENTARIOS")
                                     rotacion_cuentas_cobrar = razon_actividad.get("ROTACION CUENTAS POR COBRAR")
@@ -183,6 +211,16 @@ def main():
                                 else:
                                     print("La rotación de capital de trabajo es aceptable.")
                                     print("Lo que puede indicar una eficiente rotación de inventarios y cobro de cuentas.\n")
+                                
+                                exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                                if exportar == "s":
+                                    resultado_exportacion = exportar_excel({
+                                        "Razon_actividad": df_razon_actividad["Razon_de_actividad"]
+                                    })
+
+                                    print(resultado_exportacion)
+                                else:
+                                    pass
                             else: 
                                 print(razon_actividad)  # Muestra el mensaje de error si no se pudo calcular la razón de actividad
                         else:
@@ -199,13 +237,11 @@ def main():
 
                             if isinstance(razon_liquidez, dict):
 
-                                print(
-                                    mostrar_razon_liquidez(
-                                        razon_liquidez,
-                                        capital_trabajo
-                                    )
+                                df_razon_liquidez=mostrar_razon_liquidez(
+                                    razon_liquidez,
+                                    capital_trabajo
                                 )
-
+                                
                                 try:
 
                                     capital_trabajo_resultado = capital_trabajo.get("CAPITAL DE TRABAJO", 0)
@@ -302,6 +338,19 @@ def main():
                                     print("La razón de efectivo es regular.")
                                     print(f"La empresa tiene {razon_efectivo:.4f} pesos en efectivo por cada $1.00 de pasivo a corto plazo.")
                                     print("Lo que puede indicar una disponibilidad adecuada de efectivo para enfrentar obligaciones inmediatas.\n")
+                                
+                                exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                                if exportar == "s":
+                                    resultado_exportacion = exportar_excel({
+                                        "Capital_Trabajo": df_razon_liquidez["Capital_Trabajo"],
+                                        "Razon_Circulante": df_razon_liquidez["Razon_Circulante"],
+                                        "Prueba_Acida": df_razon_liquidez["Prueba_Acida"],
+                                        "Razon_Efectivo": df_razon_liquidez["Razon_Efectivo"]
+                                    })
+
+                                    print(resultado_exportacion)
+                                else:
+                                    pass
                             else:
                                 print(razon_liquidez)
                         else:
@@ -315,10 +364,8 @@ def main():
 
                         if isinstance(razon_endeudamiento, dict):
 
-                            print(
-                                mostrar_razon_endeudamiento(
-                                    razon_endeudamiento
-                                )
+                            df_razon_endeudamiento=mostrar_razon_endeudamiento(
+                                razon_endeudamiento
                             )
 
                             try:
@@ -431,12 +478,21 @@ def main():
                                 print(f"La empresa puede cubrir {cobertura_intereses:.2f} veces sus gastos financieros.")
                                 print("Lo que puede indicar una capacidad aceptable para cubrir intereses.\n")
 
+                            exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                            if exportar == "s":
+                                resultado_exportacion = exportar_excel({
+                                    "Razon_endeudamiento": df_razon_endeudamiento["Razon_de_endeudamiento"]
+                                })
+
+                                print(resultado_exportacion)
+                            else:
+                                pass
                         else:
                             print(razon_endeudamiento)
                     elif opcion == 4:
                         razon_rentabilidad = calcular_razon_rentabilidad(estado_resultados, balance_general)
                         if isinstance(razon_rentabilidad, dict):
-                            print(mostrar_razon_rentabilidad(razon_rentabilidad))
+                            df_razon_rentabilidad=mostrar_razon_rentabilidad(razon_rentabilidad)
 
                             try:
                                 margen_utilidad = razon_rentabilidad.get("MARGEN DE UTILIDAD",0)
@@ -542,13 +598,23 @@ def main():
                                 print("El rendimiento sobre el capital común es regular.")
                                 print(f"La empresa obtiene {rendimiento_capital:.2f}% sobre el capital invertido.")
                                 print("Lo que puede indicar un rendimiento aceptable para los inversionistas.\n")
+                            
+                            exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                            if exportar == "s":
+                                resultado_exportacion = exportar_excel({
+                                    "Razon_rentabilidad": df_razon_rentabilidad["Razon_de_rentabilidad"]
+                                })
+
+                                print(resultado_exportacion)
+                            else:
+                                pass
                         else:
                             print(razon_rentabilidad)
                     elif opcion == 5:
                         try:
                             bursatilidad = calcular_bursatilidad(estado_resultados, balance_general)
                             if isinstance(bursatilidad, dict):
-                                mostrar_bursatilidad(bursatilidad)
+                                df_razon_bursatil=mostrar_bursatilidad(bursatilidad)
                                 valor_nominal = bursatilidad.get("R_V_N")
                                 valor_libros = bursatilidad.get("R_V_L")
                                 razon_ml = bursatilidad.get("R_V_ML")
@@ -622,6 +688,16 @@ def main():
                                     print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Buen desempeño, utilidad superior al valor nominal.\n")
                                 else:
                                     print(f"Utilidad/Valor nominal: {utilidad_valor_nominal:.2f} Excelente desempeño, utilidad muy superior al valor nominal.\n")
+                                
+                                exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                                if exportar == "s":
+                                    resultado_exportacion = exportar_excel({
+                                        "Razon_bursatil": df_razon_bursatil["Razon_de_bursatilidad"]
+                                    })
+
+                                    print(resultado_exportacion)
+                                else:
+                                    pass
                             else:
                                 print(bursatilidad)
                         except Exception as e:
@@ -629,7 +705,7 @@ def main():
                     elif opcion == 6:
                         analisis_dupont = calcular_analisis_DuPont(estado_resultados, balance_general)
                         if isinstance(analisis_dupont, dict):
-                            print(mostrar_analisis_dupont(analisis_dupont))
+                            df_analisis_dupont=mostrar_analisis_dupont(analisis_dupont)
                             try:
                                 margen_utilidad_neta = analisis_dupont.get("Margen de utilidad neta", 0)
                                 rotacion_activos = analisis_dupont.get("Rotacion de activos totales", 0)
@@ -696,6 +772,16 @@ def main():
                                 print("El rendimiento sobre capital es regular.")
                                 print(f"La empresa genera {roe:.2f}% de rendimiento para los accionistas.")
                                 print("Lo que puede indicar una rentabilidad estable para los inversionistas.\n")
+                            
+                            exportar = input("\n¿Quieres exportar el catalogo de cuentas a Excel? (s/n): ").lower()
+                            if exportar == "s":
+                                resultado_exportacion = exportar_excel({
+                                    "Analisis_dupont": df_analisis_dupont["Analisis_dupont"]
+                                })
+
+                                print(resultado_exportacion)
+                            else:
+                                pass
                         else:
                             print(analisis_dupont)
                     else:
