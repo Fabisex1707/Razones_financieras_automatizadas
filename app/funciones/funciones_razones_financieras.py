@@ -827,11 +827,6 @@ def exportar_excel(
 ) -> str:
 
     try:
-
-        # ==========================================
-        # EXPORTAR DATAFRAMES
-        # ==========================================
-
         if os.path.exists(nombre_archivo):
 
             with pd.ExcelWriter(
@@ -854,10 +849,6 @@ def exportar_excel(
                 for nombre_hoja, df in dataframes.items():
                     df.to_excel(writer, sheet_name=nombre_hoja)
 
-        # ==========================================
-        # APLICAR FORMATO
-        # ==========================================
-
         workbook = load_workbook(nombre_archivo)
 
         from openpyxl.styles import (
@@ -867,10 +858,6 @@ def exportar_excel(
             Side,
             Alignment
         )
-
-        # ==========================================
-        # ESTILOS
-        # ==========================================
 
         borde = Border(
 
@@ -897,17 +884,10 @@ def exportar_excel(
             vertical="center"
         )
 
-        # ==========================================
-        # FORMATO POR HOJA
-        # ==========================================
 
         for hoja in workbook.sheetnames:
 
             ws = workbook[hoja]
-
-            # ==========================================
-            # AJUSTAR ANCHO DE COLUMNAS
-            # ==========================================
 
             for columna in ws.columns:
 
@@ -929,9 +909,6 @@ def exportar_excel(
 
                 ws.column_dimensions[letra_columna].width = ancho_ajustado
 
-            # ==========================================
-            # ESTILOS GENERALES
-            # ==========================================
 
             for fila in ws.iter_rows():
 
@@ -943,9 +920,6 @@ def exportar_excel(
                     # Centrado
                     celda.alignment = centrado
 
-            # ==========================================
-            # ENCABEZADOS
-            # ==========================================
 
             for celda in ws[1]:
 
@@ -953,17 +927,10 @@ def exportar_excel(
                 celda.font = encabezado_font
                 celda.alignment = centrado
 
-            # ==========================================
-            # NEGRITAS PARA INDICES
-            # ==========================================
 
             for fila in ws.iter_rows(min_row=2):
 
                 fila[0].font = Font(bold=True)
-
-        # ==========================================
-        # GUARDAR CAMBIOS
-        # ==========================================
 
         workbook.save(nombre_archivo)
 
