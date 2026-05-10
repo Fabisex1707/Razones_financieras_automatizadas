@@ -4,6 +4,9 @@
 # Ignorar el .json 
 *.json
 
+# Ignorar el .json 
+*.xlsx
+
 # Ignorar el arcivo de configuración de la aplicación
 /.env
 # Ignorar el entorno virtual

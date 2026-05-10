@@ -1,6 +1,8 @@
 import pandas as pd 
 import os
 import pickle
+import openpyxl
+from openpyxl import load_workbook
 def input_catalogo_cuentas() -> dict | str:
     catalogo_cuentas = {}
     try:
@@ -402,19 +404,20 @@ def calcular_analisis_DuPont(estado_resultados: dict, balance_general: dict) -> 
     
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
-def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> str:
+def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> str | dict:
     try:
-        df=pd.DataFrame(catalogo_cuentas.items(), columns=["Cuenta", "Saldo"])
+        df_catalogo_cuentas=pd.DataFrame(catalogo_cuentas.items(), columns=["Cuenta", "Saldo"])
         print("\nCatálogo de Cuentas Cargado:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_catalogo_cuentas}\n")
+        return {"Catalogo_de_cuentas":df_catalogo_cuentas}
     except Exception as e:
         return f"Error al cargar el catálogo de cuentas: {e}"
 
 def mostrar_estado_resultados(estado_resultados: dict) -> str:
     try:
         #df=pd.DataFrame(estado_resultados.items(), columns=["Concepto", "Valor"])
-        df=pd.DataFrame({
+        df_estado_resultados=pd.DataFrame({
             "Valor":[
                 estado_resultados.get("Año", 0), estado_resultados.get("Ventas", 0), estado_resultados.get("Costo de Ventas", 0), "", estado_resultados.get("Gastos Generales", 0),
                 estado_resultados.get("Gastos de Ventas", 0), estado_resultados.get("Gastos Administrativos", 0), estado_resultados.get("Gastos de Depreciacion", 0), estado_resultados.get("TOTAL GASTOS", 0),
@@ -431,7 +434,7 @@ def mostrar_estado_resultados(estado_resultados: dict) -> str:
             ]
         })
 
-        df.index = [
+        df_estado_resultados.index = [
             "Año", "Ventas", "Costo de Ventas", "UTILIDAD BRUTA", "Gastos Generales",
             "Gastos de Ventas", "Gastos Administrativos", "Gastos de Depreciacion", "TOTAL GASTOS",
             "UTILIDAD DE OPERACION", "Gastos Financieros", "Productos Financieros", "RESULTADO INTEGRAL DE FINANCIAMIENTO", "Otros Gastos",
@@ -440,13 +443,14 @@ def mostrar_estado_resultados(estado_resultados: dict) -> str:
         ]
         print("\nEstado de Resultados:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_estado_resultados}\n")
+        return {"Estado_de_resultados":df_estado_resultados}
     except Exception as e:
         return f"Error al mostrar el estado de resultados: {e}"
     
 def mostrar_balance_general(balance_general: dict) -> str:
     try:
-        df=pd.DataFrame({
+        df_balance_general=pd.DataFrame({
             "Valor":[
                 balance_general.get("Año", 0), "", balance_general.get("Bancos", 0), balance_general.get("Clientes", 0), balance_general.get("Inventarios", 0), balance_general.get("Papelería y Utiles", 0), "",
                 "", balance_general.get("Terreno y Edificio", 0), balance_general.get("Maquinaria y Equipo", 0), balance_general.get("Mobiliario y Accesorios", 0), balance_general.get("Equipo de Transporte", 0), balance_general.get("Equipo de Cómputo", 0), balance_general.get("Depreciación Acumulada Activos Fijos", 0), 
@@ -473,7 +477,7 @@ def mostrar_balance_general(balance_general: dict) -> str:
             ]
         })
 
-        df.index = [
+        df_balance_general.index = [
             "Año", "ACTIVO CIRCULANTE", "Bancos", "Clientes", "Inventarios", "Papelería y Utiles", "TOTAL ACTIVO CIRCULANTE",
             "ACTIVO NO CIRCULANTE", "Terreno y Edificio", "Maquinaria y Equipo", "Mobiliario y Accesorios", "Equipo de Transporte", "Equipo de Cómputo", "Depreciación Acumulada Activos Fijos", 
             "Inversiones Permanentes", "OTROS ACTIVOS", "Gastos de Instalacion", "TOTAL ACTIVO NO CIRCULANTE", "TOTAL ACTIVO", "PASIVO A CORTO PLAZO", "Proveedores", 
@@ -483,7 +487,8 @@ def mostrar_balance_general(balance_general: dict) -> str:
         ]
         print("\nBalance General:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_balance_general}\n")
+        return {"Balance_general":df_balance_general}
     except Exception as e:
         return f"Error al mostrar el balance general: {e}"
     
@@ -498,7 +503,7 @@ def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
 
 def mostrar_razon_actividad(razon_actividad: dict) -> str:
     try:
-        df=pd.DataFrame({
+        df_razon_actividad=pd.DataFrame({
             "Valor":[
                 razon_actividad.get("Año"), razon_actividad.get("Costo de Ventas"), razon_actividad.get("Inventario"), "",
                 razon_actividad.get("Ventas"), razon_actividad.get("Cuentas por Cobrar"), "", razon_actividad.get("Costo de Ventas"),
@@ -514,7 +519,7 @@ def mostrar_razon_actividad(razon_actividad: dict) -> str:
                 "", "", razon_actividad.get("ROTACION DE CAPITAL DE TRABAJO")
             ]
         })
-        df.index = [
+        df_razon_actividad.index = [
             "Año", "Costo de Ventas", "Inventario", "ROTACION DE INVENTARIOS",
             "Ventas", "Cuentas por Cobrar", "ROTACION CUENTAS POR COBRAR", "Costo de Ventas", 
             "Cuentas por Pagar", "ROTACION DE CUENTAS POR PAGAR", "Ventas", "TOTAL ACTIVO NO CIRCULANTE", 
@@ -523,7 +528,8 @@ def mostrar_razon_actividad(razon_actividad: dict) -> str:
         ]
         print("\nRazón de Actividad:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_razon_actividad}\n")
+        return {"Razon_de_actividad":df_razon_actividad}
     except Exception as e:
         return f"Error al mostrar la razón de actividad: {e}\n"
     
@@ -608,7 +614,12 @@ def mostrar_razon_liquidez(razon_liquidez: dict, capital_trabajo: dict) -> str:
         print("\n--- RAZON DE EFECTIVO ---")
         print(df_razon_efectivo.to_string())
 
-        return "\nRazones de liquidez mostradas correctamente.\n"
+        return {
+            "Capital_Trabajo": df_capital_trabajo,
+            "Razon_Circulante": df_razon_circulante,
+            "Prueba_Acida": df_prueba_acida,
+            "Razon_Efectivo": df_razon_efectivo
+        }
     except Exception as e:
         return f"Error al mostrar la razón de liquidez: {e}\n"
     
@@ -618,7 +629,7 @@ def mostrar_razon_endeudamiento(
 
     try:
 
-        df = pd.DataFrame({
+        df_razon_endeudamiento = pd.DataFrame({
 
             "Valor":[
 
@@ -666,7 +677,7 @@ def mostrar_razon_endeudamiento(
 
         })
 
-        df.index = [
+        df_razon_endeudamiento.index = [
 
             "Año",
 
@@ -692,14 +703,15 @@ def mostrar_razon_endeudamiento(
 
         pd.options.display.float_format = '{:,.2f}'.format
 
-        return f"{df}\n"
+        print (f"{df_razon_endeudamiento}\n")
+        return {"Razon_de_endeudamiento":df_razon_endeudamiento}
 
     except Exception as e:
         return f"Error al mostrar la razón de endeudamiento: {e}\n"
 
 def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
     try:
-        df=pd.DataFrame({    
+        df_razon_rentabilidad=pd.DataFrame({    
             "Valor":[
                 razon_rentabilidad.get("Año"), razon_rentabilidad.get("Utilidad neta"), razon_rentabilidad.get("Ventas"), "",  
                 razon_rentabilidad.get("Utilidad bruta"), "", razon_rentabilidad.get("Utilidad de operacion"), "", 
@@ -711,7 +723,7 @@ def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
                 razon_rentabilidad.get("RENDIMIENTO SOBRE EL PATRIMONIO"), "", razon_rentabilidad.get("RENDIMIENTO SOBRE EL CAPITAL COMUN")
             ]
         }) 
-        df.index = [
+        df_razon_rentabilidad.index = [
             "Año", "Utilidad neta", "Ventas", "MARGEN DE UTILIDAD", 
             "Utilidad bruta", "MARGEN DE UTILIDAD BRUTA", "Utilidad de operacion", "MARGEN DE UTILIDAD OPERATIVA", 
             "Total activos", "RENDIMIENTO SOBRE LOS ACTIVOS TOTALES", "Capital contable", "RENDIMIENTO SOBRE EL PATRIMONIO", 
@@ -719,13 +731,14 @@ def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
         ]
         print("\nRazón de Rentabilidad:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_razon_rentabilidad}\n")
+        return {"Razon_de_rentabilidad":df_razon_rentabilidad}
     except Exception as e:
         return f"Error al mostrar la razón de rentabilidad: {e}\n"
     
 def mostrar_bursatilidad(bursatilidad: dict) -> str:
     try:
-        df = pd.DataFrame({
+        df_razon_bursatilidad = pd.DataFrame({
             "Valor": [
                 bursatilidad.get("Año",0), bursatilidad.get("Capital social", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_N", 0),
                 " ", bursatilidad.get("Capital contable", 0), bursatilidad.get("Numero de acciones", 0), bursatilidad.get("R_V_L", 0),
@@ -747,14 +760,14 @@ def mostrar_bursatilidad(bursatilidad: dict) -> str:
 
         pd.options.display.float_format = '{:,.2f}'.format
         print("\nBursatilidad:\n")
-        print(df.to_string(justify="right"))
-        return "\nTabla de bursatilidad mostrada correctamente.\n"
+        print(df_razon_bursatilidad.to_string(justify="right"))
+        return {"Razon_de_bursatilidad":df_razon_bursatilidad}
     except Exception as e:
         return f"Error al mostrar bursatilidad: {e}\n"
 
 def mostrar_analisis_dupont(analisis_dupont: dict) -> str:
     try:
-        df = pd.DataFrame({
+        df_analisis_dunpont = pd.DataFrame({
             "Valor":[
                 analisis_dupont.get("Año"), analisis_dupont.get("Utilidad neta"), analisis_dupont.get("Ventas"),"",
                 analisis_dupont.get("Total de activos"),"", analisis_dupont.get("Capital Contable"),"", ""
@@ -765,7 +778,7 @@ def mostrar_analisis_dupont(analisis_dupont: dict) -> str:
                 analisis_dupont.get("Rendimiento sobre capital (ROE)")
             ]
         })
-        df.index = [
+        df_analisis_dunpont.index = [
             "Año",
             "Utilidad neta",
             "Ventas",
@@ -778,7 +791,8 @@ def mostrar_analisis_dupont(analisis_dupont: dict) -> str:
         ]
         print("\nAnalisis DuPont:")
         pd.options.display.float_format = '{:,.2f}'.format
-        return f"{df}\n"
+        print (f"{df_analisis_dunpont}\n")
+        return {"Analisis_dupont":df_analisis_dunpont}
     except Exception as e:
         return f"Error al mostrar el analisis DuPont: {e}\n"
 
@@ -806,3 +820,165 @@ def guardar_datos(datos, nombre_archivo):
     except Exception as e:
         return f"Error al guardar datos: {e}\n"
 
+#Funcion de exportacion a excel
+def exportar_excel(
+    dataframes: dict,
+    nombre_archivo: str = "Razones_Financieras.xlsx"
+) -> str:
+
+    try:
+
+        # ==========================================
+        # EXPORTAR DATAFRAMES
+        # ==========================================
+
+        if os.path.exists(nombre_archivo):
+
+            with pd.ExcelWriter(
+                nombre_archivo,
+                engine="openpyxl",
+                mode="a",
+                if_sheet_exists="replace"
+            ) as writer:
+
+                for nombre_hoja, df in dataframes.items():
+                    df.to_excel(writer, sheet_name=nombre_hoja)
+
+        else:
+
+            with pd.ExcelWriter(
+                nombre_archivo,
+                engine="openpyxl"
+            ) as writer:
+
+                for nombre_hoja, df in dataframes.items():
+                    df.to_excel(writer, sheet_name=nombre_hoja)
+
+        # ==========================================
+        # APLICAR FORMATO
+        # ==========================================
+
+        workbook = load_workbook(nombre_archivo)
+
+        from openpyxl.styles import (
+            Font,
+            PatternFill,
+            Border,
+            Side,
+            Alignment
+        )
+
+        # ==========================================
+        # ESTILOS
+        # ==========================================
+
+        borde = Border(
+
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin")
+
+        )
+
+        encabezado_fill = PatternFill(
+            start_color="1F4E78",
+            end_color="1F4E78",
+            fill_type="solid"
+        )
+
+        encabezado_font = Font(
+            color="FFFFFF",
+            bold=True
+        )
+
+        centrado = Alignment(
+            horizontal="center",
+            vertical="center"
+        )
+
+        # ==========================================
+        # FORMATO POR HOJA
+        # ==========================================
+
+        for hoja in workbook.sheetnames:
+
+            ws = workbook[hoja]
+
+            # ==========================================
+            # AJUSTAR ANCHO DE COLUMNAS
+            # ==========================================
+
+            for columna in ws.columns:
+
+                max_length = 0
+
+                letra_columna = columna[0].column_letter
+
+                for celda in columna:
+
+                    try:
+
+                        if len(str(celda.value)) > max_length:
+                            max_length = len(str(celda.value))
+
+                    except:
+                        pass
+
+                ancho_ajustado = max_length + 5
+
+                ws.column_dimensions[letra_columna].width = ancho_ajustado
+
+            # ==========================================
+            # ESTILOS GENERALES
+            # ==========================================
+
+            for fila in ws.iter_rows():
+
+                for celda in fila:
+
+                    # Bordes
+                    celda.border = borde
+
+                    # Centrado
+                    celda.alignment = centrado
+
+            # ==========================================
+            # ENCABEZADOS
+            # ==========================================
+
+            for celda in ws[1]:
+
+                celda.fill = encabezado_fill
+                celda.font = encabezado_font
+                celda.alignment = centrado
+
+            # ==========================================
+            # NEGRITAS PARA INDICES
+            # ==========================================
+
+            for fila in ws.iter_rows(min_row=2):
+
+                fila[0].font = Font(bold=True)
+
+        # ==========================================
+        # GUARDAR CAMBIOS
+        # ==========================================
+
+        workbook.save(nombre_archivo)
+
+        return (
+            f"Exportación completada correctamente en "
+            f"'{nombre_archivo}'.\n"
+        )
+
+    except PermissionError:
+
+        return (
+            f"Error: El archivo '{nombre_archivo}' está abierto.\n"
+            "Ciérrelo e intente nuevamente.\n"
+        )
+
+    except Exception as e:
+
+        return f"Error al exportar a Excel: {e}\n"
