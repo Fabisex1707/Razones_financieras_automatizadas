@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
+from funciones.funciones_razones_financieras import input_catalogo_cuentas, cargar_datos_catalogo, guardar_datos,mostrar_catalogo_cuentas, calcular_estado_resultados, mostrar_estado_resultados, calcular_balance_general, mostrar_balance_general, calcular_capital_trabajo, calcular_razon_actividad, mostrar_razon_actividad, calcular_razon_liquidez, mostrar_razon_liquidez,calcular_razon_rentabilidad, mostrar_razon_rentabilidad, calcular_bursatilidad, mostrar_bursatilidad, calcular_analisis_DuPont, mostrar_analisis_dupont
 
 def main():
     print(f"{'-'*20} Bienvenido al programa de Razones Financieras {'-'*20}")
@@ -188,7 +188,124 @@ def main():
                         else:
                             print(capital_trabajo)
                     elif opcion == 2:
-                        print("Opción para calcular razón de liquidez seleccionada. (Funcionalidad en desarrollo)")   
+                        capital_trabajo = calcular_capital_trabajo(balance_general)
+
+                        if isinstance(capital_trabajo, dict):
+
+                            razon_liquidez = calcular_razon_liquidez(
+                                balance_general,
+                                catalogo_cuentas
+                            )
+
+                            if isinstance(razon_liquidez, dict):
+
+                                print(
+                                    mostrar_razon_liquidez(
+                                        razon_liquidez,
+                                        capital_trabajo
+                                    )
+                                )
+
+                                try:
+
+                                    capital_trabajo_resultado = capital_trabajo.get("CAPITAL DE TRABAJO", 0)
+
+                                    razon_circulante = razon_liquidez.get("RAZON CIRCULANTE", 0)
+
+                                    prueba_acida = razon_liquidez.get("PRUEBA ACIDA", 0)
+
+                                    razon_efectivo = razon_liquidez.get("RAZON DE EFECTIVO", 0)
+
+                                except Exception as e:
+                                    print(f"Error al extraer las razones de liquidez: {e}")
+                                    continue
+
+                                print(f"\n{'*'*80}")
+                                print("\t\t---Interpretación de resultados---")
+                                print(f"{'*'*80}\n")
+
+                                print("\t--Capital de trabajo--")
+
+                                if capital_trabajo_resultado < 0:
+
+                                    print("El capital de trabajo es negativo.")
+                                    print(f"La empresa tiene un déficit de ${capital_trabajo_resultado:,.2f} pesos.")
+                                    print("Lo que puede indicar problemas para cubrir obligaciones a corto plazo y posibles dificultades de liquidez.\n")
+
+                                elif capital_trabajo_resultado > 0:
+
+                                    print("El capital de trabajo es positivo.")
+                                    print(f"La empresa cuenta con ${capital_trabajo_resultado:,.2f} pesos disponibles después de cubrir sus pasivos a corto plazo.")
+                                    print("Lo que puede indicar estabilidad financiera y capacidad para operar normalmente.\n")
+
+                                else:
+
+                                    print("El capital de trabajo es neutro.")
+                                    print("La empresa apenas cubre sus obligaciones de corto plazo sin margen adicional.\n")
+
+                                print("\t--Razon circulante--")
+
+                                if razon_circulante < 1:
+
+                                    print("La razón circulante es baja.")
+                                    print(f"La empresa cuenta con {razon_circulante:.4f} pesos de activo circulante por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar problemas para cubrir obligaciones inmediatas.\n")
+
+                                elif razon_circulante > 2:
+
+                                    print("La razón circulante es alta.")
+                                    print(f"La empresa cuenta con {razon_circulante:.4f} pesos de activo circulante por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar una excelente capacidad de pago, aunque también podría reflejar recursos ociosos.\n")
+
+                                else:
+
+                                    print("La razón circulante es regular.")
+                                    print(f"La empresa cuenta con {razon_circulante:.4f} pesos de activo circulante por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar una capacidad aceptable para cubrir obligaciones inmediatas.\n")
+
+                                print("\t--Prueba acida--")
+
+                                if prueba_acida < 1:
+
+                                    print("La prueba ácida es baja.")
+                                    print(f"La empresa dispone de {prueba_acida:.4f} pesos líquidos por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar dependencia del inventario para cubrir obligaciones.\n")
+
+                                elif prueba_acida > 1.5:
+
+                                    print("La prueba ácida es alta.")
+                                    print(f"La empresa dispone de {prueba_acida:.4f} pesos líquidos por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar una sólida liquidez inmediata.\n")
+
+                                else:
+
+                                    print("La prueba ácida es regular.")
+                                    print(f"La empresa dispone de {prueba_acida:.4f} pesos líquidos por cada $1.00 de deuda a corto plazo.")
+                                    print("Lo que puede indicar una liquidez aceptable sin depender completamente del inventario.\n")
+
+                                print("\t--Razon de efectivo--")
+
+                                if razon_efectivo < 0.5:
+
+                                    print("La razón de efectivo es baja.")
+                                    print(f"La empresa tiene {razon_efectivo:.4f} pesos en efectivo por cada $1.00 de pasivo a corto plazo.")
+                                    print("Lo que puede indicar poca disponibilidad inmediata de efectivo.\n")
+
+                                elif razon_efectivo > 1:
+
+                                    print("La razón de efectivo es alta.")
+                                    print(f"La empresa tiene {razon_efectivo:.4f} pesos en efectivo por cada $1.00 de pasivo a corto plazo.")
+                                    print("Lo que puede indicar una excelente liquidez inmediata, aunque podría existir exceso de efectivo sin invertir.\n")
+
+                                else:
+
+                                    print("La razón de efectivo es regular.")
+                                    print(f"La empresa tiene {razon_efectivo:.4f} pesos en efectivo por cada $1.00 de pasivo a corto plazo.")
+                                    print("Lo que puede indicar una disponibilidad adecuada de efectivo para enfrentar obligaciones inmediatas.\n")
+                            else:
+                                print(razon_liquidez)
+                        else:
+                            print(capital_trabajo)
                     elif opcion == 3:
                         print("Opción para calcular razón de endeudamiento seleccionada. (Funcionalidad en desarrollo)")
                     elif opcion == 4:

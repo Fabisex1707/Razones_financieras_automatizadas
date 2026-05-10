@@ -228,6 +228,102 @@ def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) 
         return f"Error al calcular la razón de actividad: {e}\n"
     return razon_rentabilidad  
 
+def calcular_razon_liquidez(balance_general: dict, catalogo_cuentas: dict) -> dict | str:
+    razon_liquidez = {}
+
+    try:
+        razon_liquidez["Año"] = balance_general.get("Año", "")
+        razon_liquidez["Activo Circulante"] = balance_general.get("TOTAL ACTIVO CIRCULANTE", 0)
+        razon_liquidez["Pasivo a Corto Plazo"] = balance_general.get("TOTAL PASIVO CIRCULANTE", 0)
+        razon_liquidez["RAZON CIRCULANTE"] = (
+            razon_liquidez["Activo Circulante"] /
+            razon_liquidez["Pasivo a Corto Plazo"]
+            if razon_liquidez["Pasivo a Corto Plazo"] != 0 else 0
+        )
+
+        razon_liquidez["Inventario"] = catalogo_cuentas.get("Inventarios", 0)
+        razon_liquidez["ACTIVO MENOS INVENTARIO"] = (
+            razon_liquidez["Activo Circulante"] -
+            razon_liquidez["Inventario"]
+        )
+
+        razon_liquidez["PRUEBA ACIDA"] = (
+            razon_liquidez["ACTIVO MENOS INVENTARIO"] /
+            razon_liquidez["Pasivo a Corto Plazo"]
+            if razon_liquidez["Pasivo a Corto Plazo"] != 0 else 0
+        )
+
+        razon_liquidez["Efectivo"] = catalogo_cuentas.get("Bancos", 0)
+
+        razon_liquidez["RAZON DE EFECTIVO"] = (
+            razon_liquidez["Efectivo"] /
+            razon_liquidez["Pasivo a Corto Plazo"]
+            if razon_liquidez["Pasivo a Corto Plazo"] != 0 else 0
+        )
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el balance general o catálogo de cuentas.\n"
+    except Exception as e:
+        return f"Error al calcular la razón de liquidez: {e}\n"
+    
+    return razon_liquidez
+
+def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
+    bursatilidad = {}
+
+    try:
+        Numero_de_acciones = float(input("Ingrese el numero de acciones: "))
+        valor_en_mercado = float(input("Ingrese el valor de mercado: "))
+    except ValueError:
+        return "Error: Por favor, ingrese un valor numérico válido.\n"
+
+    try:
+        bursatilidad ["VALOR NOMINAL"]= balance_general.get("Año")
+        bursatilidad ["Capital social"] = balance_general.get("Capital Social", 0)
+        bursatilidad ["Numero de acciones"] = Numero_de_acciones
+        bursatilidad ["R_V_N"] = bursatilidad["Capital social"] / bursatilidad["Numero de acciones"]
+        bursatilidad ["Capital contable"] = balance_general.get("TOTAL PASIVO Y CAPITAL CONTABLE", 0)
+        bursatilidad["Numero de acciones"] = Numero_de_acciones
+        bursatilidad["R_V_L"] = bursatilidad ["Capital contable"] / bursatilidad["Numero de acciones"]
+        bursatilidad["Valor en mercado"] = valor_en_mercado
+        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
+        bursatilidad["R_V_ML"] = bursatilidad ["Valor en mercado"] / bursatilidad["Valor en libros"]
+        bursatilidad["Utilidad del ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0) 
+        bursatilidad["Numero de acciones"] = Numero_de_acciones
+        bursatilidad["Valor por accion"] = bursatilidad["Utilidad del ejercicio"] /bursatilidad["Numero de acciones"]
+        bursatilidad["Valor en mercado"] = valor_en_mercado
+        bursatilidad["Utilidad x accion"] = bursatilidad["Valor por accion"] 
+        bursatilidad["R_P_U"] = bursatilidad["Valor en mercado"] / bursatilidad["Utilidad x accion"]
+        bursatilidad["Utilidad por accion"] = bursatilidad["Utilidad x accion"]
+        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
+        bursatilidad["R_R_A"] =bursatilidad["Utilidad por accion"] / bursatilidad["Valor en libros"]
+        bursatilidad["Utilidad x accion"] = bursatilidad["Utilidad por accion"] 
+        bursatilidad["Valor nominal"] = bursatilidad["R_V_N"] 
+        bursatilidad["R_U_V"] = bursatilidad["Utilidad x accion"] * bursatilidad["Valor nominal"]
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular la razón: {e}\n"
+    return bursatilidad
+
+def calcular_analisis_DuPont(estado_resultados: dict, balance_general: dict) -> dict | str:
+    analisis_dupont = {}
+    try:
+        analisis_dupont["Año"] = estado_resultados.get("Año", "")
+        analisis_dupont["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
+        analisis_dupont["Ventas"] = estado_resultados.get("Ventas", 0)
+        analisis_dupont["Total de activos"] = balance_general.get("TOTAL ACTIVO", 0)
+        analisis_dupont["Capital Contable"] = balance_general.get("Capital Contable", 0)
+        analisis_dupont["Margen de utilidad neta"] = (analisis_dupont["Utilidad neta"] / analisis_dupont["Ventas"] if analisis_dupont["Ventas"] != 0 else 0)
+        analisis_dupont["Rotacion de activos totales"] = (analisis_dupont["Ventas"] / analisis_dupont["Total de activos"] if analisis_dupont["Total de activos"] != 0 else 0)
+        analisis_dupont["Rendimiento sobre activos (ROA)"] = (analisis_dupont["Margen de utilidad neta"] * analisis_dupont["Rotacion de activos totales"])
+        analisis_dupont["Razon de endeudamiento sobre patrimonio"] = (analisis_dupont["Total de activos"] / analisis_dupont["Capital Contable"]if analisis_dupont["Capital Contable"] != 0 else 0)
+        analisis_dupont["Rendimiento sobre capital (ROE)"] = (analisis_dupont["Rendimiento sobre activos (ROA)"] * analisis_dupont["Razon de endeudamiento sobre patrimonio"]) * 100
+    except KeyError as e:
+        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
+    except Exception as e:
+        return f"Error al calcular el analisis DuPont: {e}\n"
+    return analisis_dupont
+    
 # Funciones para mostrar los estados financieros de forma legible utilizando pandas
 
 def mostrar_catalogo_cuentas(catalogo_cuentas: dict) -> str:
@@ -315,63 +411,6 @@ def mostrar_balance_general(balance_general: dict) -> str:
     except Exception as e:
         return f"Error al mostrar el balance general: {e}"
     
-def calcular_bursatilidad(estado_resultados: dict, balance_general: dict) -> dict | str:
-    bursatilidad = {}
-
-    try:
-        Numero_de_acciones = float(input("Ingrese el numero de acciones: "))
-        valor_en_mercado = float(input("Ingrese el valor de mercado: "))
-    except ValueError:
-        return "Error: Por favor, ingrese un valor numérico válido.\n"
-
-    try:
-        bursatilidad ["VALOR NOMINAL"]= balance_general.get("Año")
-        bursatilidad ["Capital social"] = balance_general.get("Capital Social", 0)
-        bursatilidad ["Numero de acciones"] = Numero_de_acciones
-        bursatilidad ["R_V_N"] = bursatilidad["Capital social"] / bursatilidad["Numero de acciones"]
-        bursatilidad ["Capital contable"] = balance_general.get("TOTAL PASIVO Y CAPITAL CONTABLE", 0)
-        bursatilidad["Numero de acciones"] = Numero_de_acciones
-        bursatilidad["R_V_L"] = bursatilidad ["Capital contable"] / bursatilidad["Numero de acciones"]
-        bursatilidad["Valor en mercado"] = valor_en_mercado
-        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
-        bursatilidad["R_V_ML"] = bursatilidad ["Valor en mercado"] / bursatilidad["Valor en libros"]
-        bursatilidad["Utilidad del ejercicio"] = estado_resultados.get("UTILIDAD NETA", 0) 
-        bursatilidad["Numero de acciones"] = Numero_de_acciones
-        bursatilidad["Valor por accion"] = bursatilidad["Utilidad del ejercicio"] /bursatilidad["Numero de acciones"]
-        bursatilidad["Valor en mercado"] = valor_en_mercado
-        bursatilidad["Utilidad x accion"] = bursatilidad["Valor por accion"] 
-        bursatilidad["R_P_U"] = bursatilidad["Valor en mercado"] / bursatilidad["Utilidad x accion"]
-        bursatilidad["Utilidad por accion"] = bursatilidad["Utilidad x accion"]
-        bursatilidad["Valor en libros"] = bursatilidad["R_V_L"] 
-        bursatilidad["R_R_A"] =bursatilidad["Utilidad por accion"] / bursatilidad["Valor en libros"]
-        bursatilidad["Utilidad x accion"] = bursatilidad["Utilidad por accion"] 
-        bursatilidad["Valor nominal"] = bursatilidad["R_V_N"] 
-        bursatilidad["R_U_V"] = bursatilidad["Utilidad x accion"] * bursatilidad["Valor nominal"]
-    except KeyError as e:
-        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
-    except Exception as e:
-        return f"Error al calcular la razón: {e}\n"
-    return bursatilidad
-
-def calcular_analisis_DuPont(estado_resultados: dict, balance_general: dict) -> dict | str:
-    analisis_dupont = {}
-    try:
-        analisis_dupont["Año"] = estado_resultados.get("Año", "")
-        analisis_dupont["Utilidad neta"] = estado_resultados.get("UTILIDAD NETA", 0)
-        analisis_dupont["Ventas"] = estado_resultados.get("Ventas", 0)
-        analisis_dupont["Total de activos"] = balance_general.get("TOTAL ACTIVO", 0)
-        analisis_dupont["Capital Contable"] = balance_general.get("Capital Contable", 0)
-        analisis_dupont["Margen de utilidad neta"] = (analisis_dupont["Utilidad neta"] / analisis_dupont["Ventas"] if analisis_dupont["Ventas"] != 0 else 0)
-        analisis_dupont["Rotacion de activos totales"] = (analisis_dupont["Ventas"] / analisis_dupont["Total de activos"] if analisis_dupont["Total de activos"] != 0 else 0)
-        analisis_dupont["Rendimiento sobre activos (ROA)"] = (analisis_dupont["Margen de utilidad neta"] * analisis_dupont["Rotacion de activos totales"])
-        analisis_dupont["Razon de endeudamiento sobre patrimonio"] = (analisis_dupont["Total de activos"] / analisis_dupont["Capital Contable"]if analisis_dupont["Capital Contable"] != 0 else 0)
-        analisis_dupont["Rendimiento sobre capital (ROE)"] = (analisis_dupont["Rendimiento sobre activos (ROA)"] * analisis_dupont["Razon de endeudamiento sobre patrimonio"]) * 100
-    except KeyError as e:
-        return f"Error: La cuenta '{e.args[0]}' no se encuentra en el catálogo de cuentas o en el estado de resultados.\n"
-    except Exception as e:
-        return f"Error al calcular el analisis DuPont: {e}\n"
-    return analisis_dupont
-    
 def mostrar_capital_trabajo(capital_trabajo: dict) -> str:
     try:
         df=pd.DataFrame(capital_trabajo.items(), columns=["Concepto", "Valor"])
@@ -411,6 +450,91 @@ def mostrar_razon_actividad(razon_actividad: dict) -> str:
         return f"{df}\n"
     except Exception as e:
         return f"Error al mostrar la razón de actividad: {e}\n"
+    
+def mostrar_razon_liquidez(razon_liquidez: dict, capital_trabajo: dict) -> str:
+
+    try:
+        print("\nRAZONES DE LIQUIDEZ\n")
+
+        df_capital_trabajo = pd.DataFrame({
+            "Valor": [
+                capital_trabajo.get("Año", ""),
+                capital_trabajo.get("TOTAL ACTIVO CIRCULANTE", 0),
+                capital_trabajo.get("TOTAL PASIVO CIRCULANTE", 0),
+                capital_trabajo.get("CAPITAL DE TRABAJO", 0)
+            ]
+        })
+
+        df_capital_trabajo.index = [
+            "Año",
+            "Activo Circulante",
+            "Pasivo a Corto Plazo",
+            "Capital de Trabajo"
+        ]
+
+        print("\n--- CAPITAL DE TRABAJO ---")
+        print(df_capital_trabajo.to_string())
+
+        df_razon_circulante = pd.DataFrame({
+            "Valor": [
+                razon_liquidez.get("Año", ""),
+                f"{razon_liquidez.get('Activo Circulante', 0):,.2f}",
+                f"{razon_liquidez.get('Pasivo a Corto Plazo', 0):,.2f}",
+                f"{razon_liquidez.get('RAZON CIRCULANTE', 0):.4f}"
+            ]
+        })
+
+        df_razon_circulante.index = [
+            "Año",
+            "Activo Circulante",
+            "Pasivo a Corto Plazo",
+            "Razon Circulante"
+        ]
+
+        print("\n--- RAZON CIRCULANTE ---")
+        print(df_razon_circulante.to_string())
+
+        df_prueba_acida = pd.DataFrame({
+            "Valor": [
+                razon_liquidez.get("Año", ""),
+                f"{razon_liquidez.get('ACTIVO MENOS INVENTARIO', 0):,.2f}",
+                f"{razon_liquidez.get('Pasivo a Corto Plazo', 0):,.2f}",
+                f"{razon_liquidez.get('PRUEBA ACIDA', 0):.4f}"
+            ]
+        })
+
+        df_prueba_acida.index = [
+            "Año",
+            "ACT-INV",
+            "Pasivo a Corto Plazo",
+            "Prueba Acida"
+        ]
+
+        print("\n--- PRUEBA ACIDA ---")
+        print(df_prueba_acida.to_string())
+
+        df_razon_efectivo = pd.DataFrame({
+            "Valor": [
+                razon_liquidez.get("Año", ""),
+                f"{razon_liquidez.get('Efectivo', 0):,.2f}",
+                f"{razon_liquidez.get('Pasivo a Corto Plazo', 0):,.2f}",
+                f"{razon_liquidez.get('RAZON DE EFECTIVO', 0):.4f}"
+            ]
+        })
+
+        df_razon_efectivo.index = [
+            "Año",
+            "Efectivo",
+            "Pasivo a Corto Plazo",
+            "Razon de Efectivo"
+        ]
+
+        print("\n--- RAZON DE EFECTIVO ---")
+        print(df_razon_efectivo.to_string())
+
+        return "\nRazones de liquidez mostradas correctamente.\n"
+    except Exception as e:
+        return f"Error al mostrar la razón de liquidez: {e}\n"
 
 def mostrar_razon_rentabilidad(razon_rentabilidad: dict) -> str:
     try:
