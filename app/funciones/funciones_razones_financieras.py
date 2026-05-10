@@ -214,7 +214,7 @@ def calcular_razon_rentabilidad(estado_resultados: dict, balance_general: dict) 
         razon_rentabilidad["MARGEN DE UTILIDAD"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
         razon_rentabilidad["Utilidad bruta"] = estado_resultados.get("UTILIDAD BRUTA", 0)
         razon_rentabilidad["MARGEN DE UTILIDAD BRUTA"] = (razon_rentabilidad["Utilidad bruta"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
-        razon_rentabilidad["Utilidad de operacion"] = estado_resultados.get("UTILIDAD DE OPERACIÓN", 0)
+        razon_rentabilidad["Utilidad de operacion"] = estado_resultados.get("UTILIDAD DE OPERACION", 0)
         razon_rentabilidad["MARGEN DE UTILIDAD OPERATIVA"] = (razon_rentabilidad["Utilidad de operacion"] / razon_rentabilidad["Ventas"]) * 100 if razon_rentabilidad["Ventas"] != 0 else 0
         razon_rentabilidad["Total activos"] = balance_general.get("TOTAL ACTIVO", 0)
         razon_rentabilidad["RENDIMIENTO SOBRE LOS ACTIVOS TOTALES"] = (razon_rentabilidad["Utilidad neta"] / razon_rentabilidad["Total activos"]) * 100 if razon_rentabilidad["Total activos"] != 0 else 0
